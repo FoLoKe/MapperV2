@@ -1,0 +1,56 @@
+package com.maper.a3ibetd.mapperv2;
+
+import android.graphics.Canvas;
+import android.graphics.Paint;
+import android.graphics.PointF;
+
+public class MapText extends MapObject
+{
+    private int color;
+    private String text;
+    private Paint paint;
+    public MapText()
+    {
+        activeElement=false;
+    }
+    public MapText(int color,float x,float y)
+    {
+        paint=new Paint();
+        location= new PointF(x,y);
+        paint.setColor(color);
+        paint.setTextSize(48f);
+        this.color=color;
+        this.text="";
+        activeElement=true;
+    }
+
+    @Override
+    public void draw(Canvas canvas)
+    {
+        // TODO: Implement this method
+        if(activeElement)
+        {
+            canvas.drawText(text,location.x,location.y,paint);
+        }
+    }
+
+    @Override
+    public void update()
+    {
+        // TODO: Implement this method
+    }
+
+
+
+    public void update(String text)
+    {
+        // TODO: Implement this method
+        this.text=text;
+    }
+
+    public void setColor(int color)
+    {
+        this.color=color;
+    }
+
+}
