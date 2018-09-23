@@ -1,12 +1,15 @@
 //package com.maper.a3ibetd.mapperv2;
 package com.maper.a3ibetd.mapperv2;
 
+import android.Manifest;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
+import android.content.pm.PackageManager;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.os.Environment;
+import android.support.v4.app.ActivityCompat;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -39,6 +42,9 @@ public class MainActivity extends Activity
 
         Button saveButton =findViewById(R.id.saveButton);
         mapPanel=findViewById(R.id.canvasPanel);
+
+        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE) == PackageManager.PERMISSION_DENIED)
+            ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, 10001);
 
         saveButton.setOnClickListener
                 (new OnClickListener()
