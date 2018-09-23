@@ -24,6 +24,7 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
+import java.util.HashMap;
 import java.util.Map;
 
 
@@ -127,14 +128,26 @@ public class MainActivity extends Activity
                             float x=Float.valueOf(templine=reader.readLine());
                             float y=Float.valueOf(templine=reader.readLine());
                             line+=x;
+                            HashMap<Integer, MapWallPoint> tempMapWallPoints = new HashMap<>();
                             while(!((templine=reader.readLine()).contains("***")))
                             {
+
                                 if (templine==null)
                                     return "error unexpected end of file"+templine;
                                 //line+=templine+"_";
+                                if (mapPanel.MapWallPoints.containsKey(Integer.valueOf(templine))) {
+
+                                    tempMapWallPoints.put(Integer.valueOf(templine), mapPanel.MapWallPoints.get(Integer.valueOf(templine)));
+                                }
+                                else
+                                    {
+                                    return "error no point";
+                                }
+
 
                             }
-                            mapPanel.MapWallPoints.put(index,new MapWallPoint(Color.rgb(0,255,0),x,y,0,50,50,mapPanel.MapWallPoints.size(),mapPanel.MapWallPoints));
+                            mapPanel.MapWallPoints.put(index,new MapWallPoint(Color.rgb(0,255,0),x,y,0,50,50,mapPanel.MapWallPoints.size(),tempMapWallPoints));
+                            tempMapWallPoints.clear();
                         }
                     }
                     inputStream.close();
@@ -218,10 +231,33 @@ public class MainActivity extends Activity
         ad.setPositiveButton("Принять", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
-                    // Здесь впиши, что хочешь на OK
+                // Здесь впиши, что хочешь на OK
                 // Это строка, из которой нужен текст
                 EditText ET = layout.findViewById(R.id.coord);
-            }
+                String Row = ET.getText().toString();
+                boolean errorCheck = true;
+                //while(!(Row.isEmpty())&&errorCheck)
+                //{
+                //if(Row.contains(","))
+                //{
+
+                String[] tempRows = Row.split(", ");
+                HashMap<Integer, MapWallPoint> tempMapWallPoints = new HashMap<>();
+                if (Row.length()>0)
+                {
+                    for (int i = 0; i < tempRows.length; i++) {
+                        int j=Integer.valueOf(tempRows[i]);
+                        if (mapPanel.MapWallPoints.containsKey(Integer.valueOf(tempRows[i]))) {
+
+                            tempMapWallPoints.put(Integer.valueOf(tempRows[i]), mapPanel.MapWallPoints.get(Integer.valueOf(tempRows[i])));
+                        } else {
+                            return;
+                        }
+                    }
+
+                }
+                mapPanel.putWallPoint(tempMapWallPoints);
+        }
         });
 
         // Кнопка отмены
