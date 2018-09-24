@@ -24,6 +24,8 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
+import java.util.Arrays;
+import java.util.HashMap;
 import java.util.Map;
 
 
@@ -83,7 +85,7 @@ public class MainActivity extends Activity
                 );
 
     }
-    public String /*HashMap<Integer,MapWallPoint> */openFile(String fileName,int floorNumber) {
+    public String openFile(String fileName,int floorNumber) {
         String line="";
         try {
 
@@ -104,8 +106,7 @@ public class MainActivity extends Activity
                 {
                     InputStreamReader isr = new InputStreamReader(inputStream);
                     BufferedReader reader = new BufferedReader(isr);
-                    //boolean firstRow=true;
-                    String templine="";
+                    String templine;
 
                     if ((templine = reader.readLine()) != null)
                     {
@@ -113,7 +114,6 @@ public class MainActivity extends Activity
                         {
                             char tempFloor=templine.charAt(5);
                             mapPanel.currentFloor=Character.getNumericValue(tempFloor);
-                            //line+=tempFloor;
                             mapPanel.clearMap();
                         }
                         else
@@ -127,14 +127,25 @@ public class MainActivity extends Activity
                             float x=Float.valueOf(templine=reader.readLine());
                             float y=Float.valueOf(templine=reader.readLine());
                             line+=x;
+                            HashMap<Integer, MapWallPoint> tempMapWallPoints = new HashMap<>();
                             while(!((templine=reader.readLine()).contains("***")))
                             {
+
                                 if (templine==null)
                                     return "error unexpected end of file"+templine;
-                                //line+=templine+"_";
+                                if (mapPanel.MapWallPoints.containsKey(Integer.valueOf(templine))) {
+
+                                    tempMapWallPoints.put(Integer.valueOf(templine), mapPanel.MapWallPoints.get(Integer.valueOf(templine)));
+                                }
+                                else
+                                    {
+                                    return "error no point";
+                                }
+
 
                             }
-                            mapPanel.MapWallPoints.put(index,new MapWallPoint(Color.rgb(0,255,0),x,y,0,50,50,mapPanel.MapWallPoints.size(),mapPanel.MapWallPoints));
+                            mapPanel.MapWallPoints.put(index,new MapWallPoint(Color.rgb(0,255,0),x,y,0,50,50,mapPanel.MapWallPoints.size(),tempMapWallPoints));
+                            tempMapWallPoints.clear();
                         }
                     }
                     inputStream.close();
@@ -169,32 +180,20 @@ public class MainActivity extends Activity
             FileOutputStream out = new FileOutputStream(file);
             OutputStreamWriter osw = new OutputStreamWriter(out);
             BufferedWriter writer = new BufferedWriter(osw);
-
+            int[] tempIndexes=new int[mapPanel.MapWallPoints.size()];
             writer.write("Floor"+floorNumber);
+            int i=0;
             for(Map.Entry<Integer, MapWallPoint> entry : mapPanel.MapWallPoints.entrySet())
             {
-                Integer key = entry.getKey();
-                MapWallPoint value = entry.getValue();
-                value.save(writer);
-                //writer.write("***");
-					/*writer.newLine();
-					writer.write(Integer.toString(value.myIndex));
-					writer.newLine();
-					writer.write(Float.toString(value.location.x));
-					writer.newLine();
-					writer.write(Float.toString(value.location.y));
-					for(Map.Entry<Integer, MapWallPoint> entryTwo : value.walls.entrySet())
-					{
-						Integer keyTwo = entryTwo.getKey();
-						MapWallPoint valueTwo = entryTwo.getValue();
-						writer.newLine();
-						writer.write(Integer.toString(keyTwo));
-					}
-
-				writer.newLine();
-					writer.write("***");*/
-                //writer.newLine();
-                //mapPanel.stringButtonPress=root+""+getFileStreamPath(fname);
+                tempIndexes[i] = entry.getKey();
+                //MapWallPoint value = entry.getValue();
+                //value.save(writer);
+                i++;
+            }
+            Arrays.sort(tempIndexes);
+            for(int j=0;j<i;j++)
+            {
+                mapPanel.MapWallPoints.get(tempIndexes[j]).save(writer);
             }
             writer.close();
             osw.close();
@@ -218,10 +217,33 @@ public class MainActivity extends Activity
         ad.setPositiveButton("Принять", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
-                    // Здесь впиши, что хочешь на OK
+                // Здесь впиши, что хочешь на OK
                 // Это строка, из которой нужен текст
                 EditText ET = layout.findViewById(R.id.coord);
-            }
+                String Row = ET.getText().toString();
+                boolean errorCheck = true;
+                //while(!(Row.isEmpty())&&errorCheck)
+                //{
+                //if(Row.contains(","))
+                //{
+
+                String[] tempRows = Row.split(", ");
+                HashMap<Integer, MapWallPoint> tempMapWallPoints = new HashMap<>();
+                if (Row.length()>0)
+                {
+                    for (int i = 0; i < tempRows.length; i++) {
+                        int j=Integer.valueOf(tempRows[i]);
+                        if (mapPanel.MapWallPoints.containsKey(Integer.valueOf(tempRows[i]))) {
+
+                            tempMapWallPoints.put(Integer.valueOf(tempRows[i]), mapPanel.MapWallPoints.get(Integer.valueOf(tempRows[i])));
+                        } else {
+                            return;
+                        }
+                    }
+
+                }
+                mapPanel.putWallPoint(tempMapWallPoints);
+        }
         });
 
         // Кнопка отмены

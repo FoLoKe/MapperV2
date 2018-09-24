@@ -141,7 +141,8 @@ public class MapPanel extends SurfaceView implements SurfaceHolder.Callback
             //windowOffset= new PointF(0,0);
             windowSize.x=canvas.getWidth();
             windowSize.y=canvas.getHeight();
-
+            x=windowSize.x/2;
+            y=windowSize.y/2;
             stringWidthXHeight=windowSize.x+"x"+windowSize.y;
             testRectangle.setWorldLocation(windowSize.x/2,windowSize.y/2);
             gameStart=false;
@@ -167,12 +168,19 @@ public class MapPanel extends SurfaceView implements SurfaceHolder.Callback
         x=event.getX();
         y=event.getY();
         switch(event.getAction())
-        {
-            case MotionEvent.ACTION_DOWN:
-                MapWallPoints.put(MapWallPoints.size(),new MapWallPoint(Color.rgb(0,255,0),x,y,0,50,50,MapWallPoints.size(),MapWallPoints));
-                break;
-            default:
-        }
+            {
+                case MotionEvent.ACTION_MOVE:
+                    testRectangle.setWorldLocation(x,y);
+                    break;
+                case MotionEvent.ACTION_DOWN:
+                    x=event.getX();
+                    y=event.getY();
+                    testRectangle.setWorldLocation(x,y);
+                    break;
+
+                default:
+                    break;
+            }
         return super.onTouchEvent(event);
     }
 
@@ -189,6 +197,9 @@ public class MapPanel extends SurfaceView implements SurfaceHolder.Callback
     {
         return MapWallPoints.size();
     }
-
+    public void putWallPoint(HashMap<Integer,MapWallPoint> tempMapWallPoints)
+    {
+        MapWallPoints.put(MapWallPoints.size(), new MapWallPoint(Color.rgb(0, 255, 0), x, y, 0, 50, 50, MapWallPoints.size(),tempMapWallPoints));
+    }
 }
 
