@@ -24,11 +24,10 @@
 			/>
 
 		<Button
+			android:id="@+id/coordButton"
 			android:layout_width="wrap_content"
 			android:layout_height="wrap_content"
-			android:text="Координаты"
-			android:id="@+id/coordButton"
-			/>
+			android:text="Установить точку" />
 
 		<Button
 			android:layout_width="wrap_content"

@@ -124,8 +124,8 @@ public class MainActivity extends Activity
                         {
 
                             int index=Integer.valueOf(templine);
-                            float x=Float.valueOf(templine=reader.readLine());
-                            float y=Float.valueOf(templine=reader.readLine());
+                            float x=Float.valueOf(reader.readLine());
+                            float y=Float.valueOf(reader.readLine());
                             line+=x;
                             HashMap<Integer, MapWallPoint> tempMapWallPoints = new HashMap<>();
                             while(!((templine=reader.readLine()).contains("***")))
@@ -134,18 +134,15 @@ public class MainActivity extends Activity
                                 if (templine==null)
                                     return "error unexpected end of file"+templine;
                                 if (mapPanel.MapWallPoints.containsKey(Integer.valueOf(templine))) {
-
                                     tempMapWallPoints.put(Integer.valueOf(templine), mapPanel.MapWallPoints.get(Integer.valueOf(templine)));
                                 }
                                 else
                                     {
                                     return "error no point";
-                                }
-
-
+                                    }
                             }
                             mapPanel.MapWallPoints.put(index,new MapWallPoint(Color.rgb(0,255,0),x,y,0,50,50,mapPanel.MapWallPoints.size(),tempMapWallPoints));
-                            tempMapWallPoints.clear();
+                          ///  tempMapWallPoints.clear();
                         }
                     }
                     inputStream.close();
@@ -158,8 +155,8 @@ public class MainActivity extends Activity
             {
                 return "no such file";
             }
-        } catch (Throwable t) {
-
+        } catch (Throwable t)
+        {
             return "error:"+ t.getLocalizedMessage();
         }
         return line;
@@ -193,6 +190,7 @@ public class MainActivity extends Activity
             Arrays.sort(tempIndexes);
             for(int j=0;j<i;j++)
             {
+
                 mapPanel.MapWallPoints.get(tempIndexes[j]).save(writer);
             }
             writer.close();
@@ -221,11 +219,6 @@ public class MainActivity extends Activity
                 // Это строка, из которой нужен текст
                 EditText ET = layout.findViewById(R.id.coord);
                 String Row = ET.getText().toString();
-                boolean errorCheck = true;
-                //while(!(Row.isEmpty())&&errorCheck)
-                //{
-                //if(Row.contains(","))
-                //{
 
                 String[] tempRows = Row.split(", ");
                 HashMap<Integer, MapWallPoint> tempMapWallPoints = new HashMap<>();
@@ -234,7 +227,6 @@ public class MainActivity extends Activity
                     for (int i = 0; i < tempRows.length; i++) {
                         int j=Integer.valueOf(tempRows[i]);
                         if (mapPanel.MapWallPoints.containsKey(Integer.valueOf(tempRows[i]))) {
-
                             tempMapWallPoints.put(Integer.valueOf(tempRows[i]), mapPanel.MapWallPoints.get(Integer.valueOf(tempRows[i])));
                         } else {
                             return;

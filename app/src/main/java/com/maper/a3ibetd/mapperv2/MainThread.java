@@ -25,7 +25,6 @@ public class MainThread extends Thread
     @Override
     public void run()
     {
-        // TODO: Implement this method
         long startTime;
         long timeMillis;
         long waitTime;
@@ -43,7 +42,7 @@ public class MainThread extends Thread
                 canvas=this.surfaceHolder.lockCanvas();
                 synchronized(surfaceHolder)
                 {
-                    this.mapPanel.update(canvas);
+                    this.mapPanel.update();
                     this.mapPanel.draw(canvas);
                 }
             }

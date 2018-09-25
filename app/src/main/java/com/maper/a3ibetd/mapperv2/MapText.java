@@ -13,15 +13,16 @@ public class MapText extends MapObject
     {
         activeElement=false;
     }
+
     public MapText(int color,float x,float y)
     {
-        paint=new Paint();
-        location= new PointF(x,y);
-        paint.setColor(color);
-        paint.setTextSize(48f);
+        this.paint=new Paint();
+        this.location= new PointF(x,y);
+        this.paint.setTextSize(48f);
         this.color=color;
+        this.paint.setColor(this.color);
         this.text="";
-        activeElement=true;
+        this.activeElement=true;
     }
 
     @Override
