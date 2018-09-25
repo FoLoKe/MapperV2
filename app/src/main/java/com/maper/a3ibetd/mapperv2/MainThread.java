@@ -25,7 +25,6 @@ public class MainThread extends Thread
     @Override
     public void run()
     {
-        // TODO: Implement this method
         long startTime;
         long timeMillis;
         long waitTime;

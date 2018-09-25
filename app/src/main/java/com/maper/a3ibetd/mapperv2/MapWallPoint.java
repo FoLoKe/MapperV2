@@ -15,19 +15,22 @@ import java.util.Map;
 public class MapWallPoint extends MapObject
 {
     public HashMap<Integer, MapWallPoint> walls=new HashMap<>(100);
-    public int myIndex;
+    private int myIndex;
     private String text;
 
     public MapWallPoint(int colorRGB,float x,float y,float rotation,float sizeX,float sizeY,int index,HashMap<Integer, MapWallPoint> walls)
     {
         this.myIndex=index;
+
+        //НА КРАЙ ДЕЛАТЬ ТАК
         for(Map.Entry<Integer, MapWallPoint> entry : walls.entrySet())
         {
             Integer key=entry.getKey();
             MapWallPoint value = entry.getValue();
             this.walls.put(key,value);
         }
-        //this.walls=walls;
+        //НЕ ДЕЛАТЬ ТАК (ССЫЛОЧНОЕ СОХРАНЕНИЕ) this.walls=walls;
+
         this.paint=new Paint();
         this.location=new PointF(x,y);
         this.paint.setColor(colorRGB);
@@ -38,7 +41,7 @@ public class MapWallPoint extends MapObject
         this.sizeY=sizeY;
 
         this.collisionRect=new RectF(location.x-sizeX/2,location.y-sizeY/2,location.x+sizeX/2,location.y+sizeY/2);
-        this.text="W"+index;
+        this.text="W "+index;
         this.activeElement=true;
     }
 
@@ -76,10 +79,6 @@ public class MapWallPoint extends MapObject
     {
         // TODO: Implement this method
     }
-    public void recombineOnLoad(HashMap<Integer, MapWallPoint> allWalls)
-    {
-        walls.clear();
-    }
     public String save(BufferedWriter writer)
     {
         try{
@@ -99,7 +98,13 @@ public class MapWallPoint extends MapObject
             writer.newLine();
             writer.write("***");
         }catch(IOException e)
-        {return e.toString();}
-        return "1";
+        {return "DATA WRITE ERROR: "+e.toString();}
+        return "ALL OK";
+    }
+
+    public int getMyIndex() {
+        {
+            return myIndex;
+        }
     }
 }

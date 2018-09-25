@@ -9,6 +9,7 @@ import android.graphics.*;
 import android.os.*;
 import java.util.*;
 import android.util.*;
+import android.view.View;
 
 public class MapPanel extends SurfaceView implements SurfaceHolder.Callback
 {
@@ -146,21 +147,25 @@ public class MapPanel extends SurfaceView implements SurfaceHolder.Callback
         // TODO: Implement this method
         x=event.getX();
         y=event.getY();
-        switch(event.getAction())
+        int action=event.getAction();
+        switch(action)
             {
-                case MotionEvent.ACTION_MOVE:
-                    testRectangle.setWorldLocation(x,y);
-                    break;
                 case MotionEvent.ACTION_DOWN:
-                    x=event.getX();
-                    y=event.getY();
+                    testRectangle.setWorldLocation(x,y);
+                    stringButtonPress="pressed";
+                    break;
+                case MotionEvent.ACTION_MOVE:
+                    stringButtonPress="moving";
                     testRectangle.setWorldLocation(x,y);
                     break;
 
+                case MotionEvent.ACTION_UP:
+                    break;
                 default:
                     break;
             }
-        return super.onTouchEvent(event);
+            stringButtonPress=MotionEvent.actionToString(action);
+        return true;
     }
 
     public void clearMap()
