@@ -43,7 +43,7 @@ public class MainThread extends Thread
                 canvas=this.surfaceHolder.lockCanvas();
                 synchronized(surfaceHolder)
                 {
-                    this.mapPanel.update(canvas);
+                    this.mapPanel.update();
                     this.mapPanel.draw(canvas);
                 }
             }

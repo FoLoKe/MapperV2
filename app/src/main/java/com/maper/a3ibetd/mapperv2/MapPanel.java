@@ -5,13 +5,9 @@ import android.view.SurfaceHolder;
 import android.content.Context;
 import android.view.MotionEvent;
 import android.graphics.Canvas;
-
 import android.graphics.*;
 import android.os.*;
-
 import java.util.*;
-
-
 import android.util.*;
 
 public class MapPanel extends SurfaceView implements SurfaceHolder.Callback
@@ -24,7 +20,6 @@ public class MapPanel extends SurfaceView implements SurfaceHolder.Callback
     private float scaleFactor=1;
 
     private MainThread mainThread;
-    //private scalebleBackGround Bg;
     private MapText textFPS;
     private MapText textWidthXHeight;
     private MapText textMemUsage;
@@ -35,34 +30,22 @@ public class MapPanel extends SurfaceView implements SurfaceHolder.Callback
     private Debug.MemoryInfo memInfo;
     private MyPoint testRectangle;
 
-    //private MyPoint[] WallPoints;
-
-    //private MapCharacter player;
-
     public String stringFps="FPS unknown";
     public String stringWidthXHeight="WxH unknown";
     public String stringMemUsage="Mem unknown";
     public String stringButtonPress="Button unknown";
 
-
-
     private boolean gameStart=false;
     private PointF windowSize;
-    private PointF windowOffset;
-    private boolean actionPreformed=false;
 
     public int currentFloor=1;
     public HashMap<Integer,MapWallPoint> MapWallPoints;
 
-    //private final String LOG_TAG = "myLogs";
-
-   //private final String FILENAME = "file";
-    private Context FileContext;
 
     public MapPanel(Context context, AttributeSet attributeSet)
     {
         super(context, attributeSet);
-        this.FileContext=context;
+
         getHolder().addCallback(this);
         mainThread= new MainThread(getHolder(),this);
         setFocusable(true);
@@ -84,7 +67,7 @@ public class MapPanel extends SurfaceView implements SurfaceHolder.Callback
 
         stringButtonPress="just started and nothing";
         memInfo = new Debug.MemoryInfo();
-        //Bg=new scalebleBackGround(BitmapFactory.decodeResource(getResources(), R.drawable.map_desk_tile));
+
         mainThread.setRunning(true);
         mainThread.start();
         gameStart=true;
@@ -110,15 +93,12 @@ public class MapPanel extends SurfaceView implements SurfaceHolder.Callback
         // TODO: Implement this method
 
     }
-    public void update(Canvas canvas)
+    public void update()
     {
         if(gameStart)
         {
             return;
         }
-        //windowOffset.x=player.getLocationX()-windowSize.x/2;
-        //windowOffset.y=player.getLocationY()-windowSize.y/2;
-
         if (checkMemory)
         {
             Debug.getMemoryInfo(memInfo);
@@ -138,7 +118,6 @@ public class MapPanel extends SurfaceView implements SurfaceHolder.Callback
     {
         if (gameStart)
         {
-            //windowOffset= new PointF(0,0);
             windowSize.x=canvas.getWidth();
             windowSize.y=canvas.getHeight();
             x=windowSize.x/2;
@@ -190,7 +169,6 @@ public class MapPanel extends SurfaceView implements SurfaceHolder.Callback
     }
     public void addWalls(int index,MapWallPoint wallPoint)
     {
-
         MapWallPoints.put(index,wallPoint);
     }
     public int getWallPointsCount()
