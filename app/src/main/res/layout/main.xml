@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+	xmlns:app="http://schemas.android.com/apk/res-auto"
 	android:layout_width="match_parent"
 	android:layout_height="match_parent"
 	android:gravity="center">
@@ -10,30 +11,66 @@
 		android:id="@+id/canvasPanel"
 		/>
 
+	<HorizontalScrollView
+		android:layout_width="wrap_content"
+		android:layout_height="wrap_content"
+		android:layout_gravity="bottom|center"
+		android:gravity="center">
+
+		<LinearLayout
+			android:layout_width="match_parent"
+			android:layout_height="wrap_content"
+			android:gravity="center"
+			android:orientation="horizontal">
+
+			<Button
+				android:id="@+id/saveButton"
+				android:layout_width="wrap_content"
+				android:layout_height="wrap_content"
+				android:text="Сохранить" />
+
+			<Button
+				android:id="@+id/coordButton"
+				android:layout_width="wrap_content"
+				android:layout_height="wrap_content"
+				android:text="Установить точку" />
+
+			<Button
+				android:id="@+id/loadButton"
+				android:layout_width="wrap_content"
+				android:layout_height="wrap_content"
+				android:text="Загрузить" />
+		</LinearLayout>
+	</HorizontalScrollView>
+
 	<LinearLayout
-		android:layout_gravity="bottom"
-		android:orientation="horizontal"
-		android:gravity="center"
-		android:layout_width="match_parent"
-		android:layout_height="wrap_content">
-		<Button
-			android:layout_width="wrap_content"
-			android:layout_height="wrap_content"
-			android:text="Сохранить"
-			android:id="@+id/saveButton"
-			/>
+		android:layout_width="wrap_content"
+		android:layout_height="match_parent"
+		android:layout_marginRight="5dp"
+		android:orientation="vertical"
+		android:layout_gravity="right"
+		android:gravity="center">
 
 		<Button
-			android:id="@+id/coordButton"
-			android:layout_width="wrap_content"
-			android:layout_height="wrap_content"
-			android:text="Установить точку" />
-
-		<Button
-			android:layout_width="wrap_content"
-			android:layout_height="wrap_content"
-			android:text="Загрузить"
-			android:id="@+id/loadButton"
-		/>
+			android:id="@+id/upButton"
+			android:layout_width="40dp"
+			android:layout_height="40dp"
+			android:layout_marginBottom="5dp"
+			android:background="@drawable/levelup"/>
+        <Button
+            android:id="@+id/downButton"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:background="@drawable/leveldown"/>
 	</LinearLayout>
+
+    <Button
+        android:id="@+id/edit_move"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="top|right"
+        android:layout_marginRight="5dp"
+        android:layout_marginTop="5dp"
+        android:background="@drawable/edit" />
+
 </FrameLayout>

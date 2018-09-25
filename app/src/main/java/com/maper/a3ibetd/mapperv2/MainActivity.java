@@ -6,16 +6,27 @@ import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.pm.PackageManager;
+import android.content.res.Resources;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.Color;
+import android.graphics.Point;
+import android.graphics.drawable.BitmapDrawable;
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.os.Environment;
 import android.support.v4.app.ActivityCompat;
+import android.text.BoringLayout;
+import android.util.DisplayMetrics;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
+import android.view.ViewGroup;
 import android.view.WindowManager;
 import android.widget.Button;
+import android.widget.CheckBox;
 import android.widget.EditText;
+import android.widget.LinearLayout;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
@@ -34,6 +45,8 @@ public class MainActivity extends Activity
 {
     private String fileName ="Map";
     MapPanel mapPanel;
+    // Состояние кнопки редактирования/сдвига
+    Boolean edit_move_Condition = false;
     protected void onCreate(Bundle savedInstanceState)
     {
         super.onCreate(savedInstanceState);
@@ -83,7 +96,37 @@ public class MainActivity extends Activity
                      }
                  }
                 );
+        // Кнопка редактирования/сдвига
+        Button edit_move = findViewById(R.id.edit_move);
+        // Устанавливаем действие по нажатию
+        edit_move.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                EMClick(view);
+            }
+        });
 
+        // Установка размеров кнопок
+        ButtonSize();
+
+    }
+
+    private void ButtonSize(){
+        // Перепись всех кнопк, подвергающихся экзекуции
+        Button EM = findViewById(R.id.edit_move);
+        Button LU = findViewById(R.id.upButton);
+        Button LD = findViewById(R.id.downButton);
+        // Получение метрик дисплея (размеров)
+        DisplayMetrics met = new DisplayMetrics();
+        getWindowManager().getDefaultDisplay().getMetrics(met);
+        // Задание размеров кнопок
+        int s = met.widthPixels/9;
+        EM.getLayoutParams().width=s;
+        EM.getLayoutParams().height=s;
+        LU.getLayoutParams().width=s;
+        LU.getLayoutParams().height=s;
+        LD.getLayoutParams().width=s;
+        LD.getLayoutParams().height=s;
     }
     public String openFile(String fileName,int floorNumber) {
         String line="";
@@ -198,6 +241,31 @@ public class MainActivity extends Activity
         } catch (Throwable t) {
             mapPanel.stringButtonPress=
                     "Exception: " + t.toString();
+        }
+    }
+
+    // Функция для кнопки сдвига/редактирования
+    private void EMClick(View v)
+    {
+        // Нужно для получения картинок
+        Resources res = getResources();
+        // Получение самой кнопки
+        Button EM = (Button)v;
+        // Инверсируем состояние кнопки
+        edit_move_Condition=!edit_move_Condition;
+        // Включаем сдвиг
+        if(edit_move_Condition) {
+            // Получаем картинку
+            Drawable img = res.getDrawable(R.drawable.move);
+            // Устанавливаем картинку
+            EM.setBackground(img);
+        }
+        // Включаем редактирование
+        else{
+            // Получаем картинку
+            Drawable img = res.getDrawable(R.drawable.edit);
+            // Устанавливаем картинку
+            EM.setBackground(img);
         }
     }
 
