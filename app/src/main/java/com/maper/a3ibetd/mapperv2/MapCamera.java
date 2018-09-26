@@ -20,8 +20,9 @@ public class MapCamera extends MapObject
     //private boolean gameStarted=true;
     public MapCamera(float locationX,float locationY,float rotation,float zoom)
     {
-        this.location.x=locationX;
-        this.location.y=locationY;
+        this.location=new PointF(locationX,locationY);
+       // this.location.x=locationX;
+       // this.location.y=locationY;
         this.rotation=rotation;
         //this.
         //this.image=resorce;
@@ -42,15 +43,18 @@ public class MapCamera extends MapObject
     public void draw(Canvas canvas,boolean drawPrivot)
     {
 
-        //canvas.save();
-        Paint paint= new Paint();
-        paint.setColor(Color.rgb(255,0,0));
-        canvas.rotate(rotation,location.x,location.y);
+      Paint paint= new Paint();
+      paint.setColor(Color.rgb(255,0,255));
+        //canvas.rotate(rotation,location.x,location.y);
+        if(drawPrivot)
+            canvas.drawRect(location.x-40,location.y-40,location.x+40,location.y+40,paint);
+        canvas.translate(location.x,location.y);
+       // canvas.
         //canvas.drawBitmap(image,locationX-privotX,locationY-privotY,paint);
-        //if(drawPrivot)
-        canvas.drawRect(location.x-4,location.y-4,location.x+4,location.y+4,paint);
-        rotation=0;
-        //canvas.restore();
+
+       // rotation=0;
+
+       // canvas.restore();
 
         // TODO: Implement this method
     }
@@ -65,6 +69,12 @@ public class MapCamera extends MapObject
         //tempLocation.y=dY;
         //dX=0;
         //dY=0;
+    }
+
+    public void update(PointF offsetXY)
+    {
+        location.x-=offsetXY.x;
+        location.y-=offsetXY.y;
     }
     public void addRotation(int degree)
     {
@@ -90,29 +100,6 @@ public class MapCamera extends MapObject
         this.location.y+=tempMoveLocation.y;
 
     }
-    public void addForce(float dX,float dY,float force)
-    {
-        float tdX=0,tdY=0;
-        if (dX<0)
-            tdX=-dX;
-        else
-            tdX=dX;
-        if (dY<0)
-            tdY=-dY;
-        else
-            tdY=dY;
-        float vectorPercentage=(tdX+tdY);
-        //if(vectorPercentage!=0)
-        {
-            //this.dY=dY/vectorPercentage*force;//vectorPecentage;
-            //this.dX=dX/vectorPercentage*force;
-        }
-        //else
-        {
-            //this.dX=this.dY=0;
-        }
-
-    }
     public float getLocationX()
     {
         return location.x;
@@ -121,12 +108,5 @@ public class MapCamera extends MapObject
     {
         return location.y;
     }
-    public float getDirectionX()
-    {
-        return 0;//tempLocation.x;
-    }
-    public float getDirectionY()
-    {
-        return 0;//tempLocation.y;
-    }
+
 }

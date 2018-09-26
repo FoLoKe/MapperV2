@@ -16,18 +16,20 @@ public class MapWallPoint extends MapObject
 {
     public HashMap<Integer, MapWallPoint> walls=new HashMap<>(100);
     private int myIndex;
+    private int[] indexes;
     private String text;
 
     public MapWallPoint(int colorRGB,float x,float y,float rotation,float sizeX,float sizeY,int index,HashMap<Integer, MapWallPoint> walls)
     {
         this.myIndex=index;
-
+        this.indexes=new int[walls.size()];
         //НА КРАЙ ДЕЛАТЬ ТАК
+        int i=0;
         for(Map.Entry<Integer, MapWallPoint> entry : walls.entrySet())
         {
-            Integer key=entry.getKey();
-            MapWallPoint value = entry.getValue();
-            this.walls.put(key,value);
+            this.indexes[i]=entry.getKey();
+            i++;
+            this.walls.put(entry.getKey(),entry.getValue());
         }
         //НЕ ДЕЛАТЬ ТАК (ССЫЛОЧНОЕ СОХРАНЕНИЕ) this.walls=walls;
 
@@ -53,11 +55,17 @@ public class MapWallPoint extends MapObject
             canvas.drawRect(collisionRect,paint);
             int tempColor = paint.getColor();
             this.paint.setStyle(Paint.Style.STROKE);
-                for(Map.Entry<Integer, MapWallPoint> entry : walls.entrySet())
-                {
-                    MapWallPoint valueTwo = entry.getValue();
-                    canvas.drawLine(valueTwo.getWorldLocation().x,valueTwo.getWorldLocation().y,location.x,location.y,paint);
+            for(int i=0;i<indexes.length;i++)
+            {
+                if (walls.get(indexes[i])!=null) {
+                    canvas.drawLine(walls.get(indexes[i]).getWorldLocation().x, walls.get(indexes[i]).getWorldLocation().y, location.x, location.y, paint);
                 }
+                else
+                {
+                    walls.remove(indexes[i]);
+                }
+            }
+
             this.paint.setStyle(Paint.Style.FILL);
             paint.setColor(Color.rgb(255,255,0));
             canvas.drawText(text,location.x,location.y-50,paint);
@@ -102,9 +110,14 @@ public class MapWallPoint extends MapObject
         return "ALL OK";
     }
 
-    public int getMyIndex() {
-        {
-            return myIndex;
-        }
+    public int getMyIndex()
+    {
+        return myIndex;
     }
+    public boolean collision(RectF rect)
+    {
+        boolean debug=collisionRect.intersect(rect);
+       return debug;
+    }
+
 }

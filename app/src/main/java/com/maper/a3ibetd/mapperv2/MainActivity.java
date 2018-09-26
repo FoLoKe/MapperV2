@@ -46,7 +46,7 @@ public class MainActivity extends Activity
     private String fileName ="Map";
     MapPanel mapPanel;
     // Состояние кнопки редактирования/сдвига
-    Boolean edit_move_Condition = false;
+    public Boolean edit_move_Condition = false;
     protected void onCreate(Bundle savedInstanceState)
     {
         super.onCreate(savedInstanceState);
@@ -259,6 +259,7 @@ public class MainActivity extends Activity
             Drawable img = res.getDrawable(R.drawable.move);
             // Устанавливаем картинку
             EM.setBackground(img);
+            mapPanel.movable=true;
         }
         // Включаем редактирование
         else{
@@ -266,6 +267,7 @@ public class MainActivity extends Activity
             Drawable img = res.getDrawable(R.drawable.edit);
             // Устанавливаем картинку
             EM.setBackground(img);
+            mapPanel.movable=false;
         }
     }
 
