@@ -11,32 +11,37 @@
 		android:id="@+id/canvasPanel"
 		/>
 
-	<LinearLayout
-		android:layout_gravity="bottom"
-		android:orientation="horizontal"
-		android:gravity="center"
-		android:layout_width="match_parent"
-		android:layout_height="wrap_content">
-		<Button
-			android:layout_width="wrap_content"
-			android:layout_height="wrap_content"
-			android:text="Сохранить"
-			android:id="@+id/saveButton"
-			/>
+	<HorizontalScrollView
+		android:layout_width="wrap_content"
+		android:layout_height="wrap_content"
+		android:layout_gravity="bottom|center"
+		android:gravity="center">
 
-		<Button
-			android:id="@+id/coordButton"
-			android:layout_width="wrap_content"
+		<LinearLayout
+			android:layout_width="match_parent"
 			android:layout_height="wrap_content"
-			android:text="Установить точку" />
+			android:gravity="center"
+			android:orientation="horizontal">
 
-		<Button
-			android:layout_width="wrap_content"
-			android:layout_height="wrap_content"
-			android:text="Загрузить"
-			android:id="@+id/loadButton"
-		/>
-	</LinearLayout>
+			<Button
+				android:id="@+id/saveButton"
+				android:layout_width="wrap_content"
+				android:layout_height="wrap_content"
+				android:text="Сохранить" />
+
+			<Button
+				android:id="@+id/coordButton"
+				android:layout_width="wrap_content"
+				android:layout_height="wrap_content"
+				android:text="Установить точку" />
+
+			<Button
+				android:id="@+id/loadButton"
+				android:layout_width="wrap_content"
+				android:layout_height="wrap_content"
+				android:text="Загрузить" />
+		</LinearLayout>
+	</HorizontalScrollView>
 
 	<LinearLayout
 		android:layout_width="wrap_content"
@@ -58,13 +63,14 @@
             android:layout_height="40dp"
             android:background="@drawable/leveldown"/>
 	</LinearLayout>
+
     <Button
         android:id="@+id/edit_move"
-        android:layout_width="40dp"
-        android:layout_height="40dp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="top|right"
         android:layout_marginRight="5dp"
         android:layout_marginTop="5dp"
-        android:layout_gravity="top|right"
-        android:background="@drawable/edit"/>
+        android:background="@drawable/edit" />
 
 </FrameLayout>
