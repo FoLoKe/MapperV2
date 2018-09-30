@@ -23,10 +23,14 @@ import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.view.WindowManager;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.LinearLayout;
+import android.widget.Spinner;
+import android.widget.TextView;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
@@ -47,6 +51,7 @@ public class MainActivity extends Activity
     MapPanel mapPanel;
     // Состояние кнопки редактирования/сдвига
     public Boolean edit_move_Condition = false;
+    String[] spinList = {"Стена","Дверь","Маршрут"};
     protected void onCreate(Bundle savedInstanceState)
     {
         super.onCreate(savedInstanceState);
@@ -105,6 +110,22 @@ public class MainActivity extends Activity
                 EMClick(view);
             }
         });
+        // Выпадающий список
+        Spinner spin = findViewById(R.id.spinner);
+        ArrayAdapter<String> adapter = new ArrayAdapter<String>(this, R.layout.row, R.id.spin_text, spinList);
+        spin.setAdapter(adapter);
+        spin.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
+                //((TextView) adapterView.getChildAt(0)).setTextColor(Color.BLUE);
+                //((TextView) adapterView.getChildAt(0)).setTextSize(20);
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> adapterView) {
+
+            }
+        });
 
         // Установка размеров кнопок
         ButtonSize();
@@ -120,7 +141,11 @@ public class MainActivity extends Activity
         DisplayMetrics met = new DisplayMetrics();
         getWindowManager().getDefaultDisplay().getMetrics(met);
         // Задание размеров кнопок
-        int s = met.widthPixels/9;
+        int s;
+        if(met.widthPixels<met.heightPixels)
+            s = met.widthPixels/9;
+        else
+            s = met.heightPixels/9;
         EM.getLayoutParams().width=s;
         EM.getLayoutParams().height=s;
         LU.getLayoutParams().width=s;
@@ -251,6 +276,8 @@ public class MainActivity extends Activity
         Resources res = getResources();
         // Получение самой кнопки
         Button EM = (Button)v;
+        // Заодно получаем выпадающий список
+        Spinner spin = findViewById(R.id.spinner);
         // Инверсируем состояние кнопки
         edit_move_Condition=!edit_move_Condition;
         // Включаем сдвиг
@@ -259,6 +286,8 @@ public class MainActivity extends Activity
             Drawable img = res.getDrawable(R.drawable.move);
             // Устанавливаем картинку
             EM.setBackground(img);
+            // Изменяем состояние списка:
+            spin.setVisibility(View.VISIBLE);
             mapPanel.movable=true;
         }
         // Включаем редактирование
@@ -267,6 +296,8 @@ public class MainActivity extends Activity
             Drawable img = res.getDrawable(R.drawable.edit);
             // Устанавливаем картинку
             EM.setBackground(img);
+            // Изменяем состояние списка:
+            spin.setVisibility(View.INVISIBLE);
             mapPanel.movable=false;
         }
     }

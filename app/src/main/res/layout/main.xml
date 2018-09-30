@@ -73,4 +73,16 @@
         android:layout_marginTop="5dp"
         android:background="@drawable/edit" />
 
+	<Spinner
+		android:id="@+id/spinner"
+		android:layout_width="wrap_content"
+		android:layout_height="wrap_content"
+		android:layout_gravity="top|left"
+		android:gravity="center"
+		android:layout_marginLeft="5dp"
+		android:layout_marginTop="5dp"
+		android:background="#50ffe4c4"
+		android:visibility="invisible"
+		android:spinnerMode="dropdown" />
+
 </FrameLayout>
