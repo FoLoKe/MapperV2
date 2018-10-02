@@ -18,7 +18,7 @@ public class MapPanel extends SurfaceView implements SurfaceHolder.Callback
     private PointF screenOffset;
     private float x;
     private float y;
-    private float scaleFactor=1;
+    protected float scaleFactor=1;
 
     private MainThread mainThread;
     private MapText textFPS;
@@ -117,15 +117,18 @@ public class MapPanel extends SurfaceView implements SurfaceHolder.Callback
         screenPrivot.x=mapCamera.location.x;
         screenPrivot.y=mapCamera.location.y;
 
-        mapCamera.update(screenOffset);
-        screenOffset.x=0;
-        screenOffset.y=0;
+
+
         textFPS.update(stringFps);
         textWidthXHeight.update(stringWidthXHeight);
         textMemUsage.update(stringMemUsage);
         textButtonPress.update(stringButtonPress);
         textButtonPress2.update(stringButtonPress2);
         testRectangle.setWorldLocation(new PointF(x,y));
+
+        mapCamera.update(screenOffset,scaleFactor);
+        screenOffset.x=0;
+        screenOffset.y=0;
 
     }
     public void draw(Canvas canvas) {
@@ -143,7 +146,7 @@ public class MapPanel extends SurfaceView implements SurfaceHolder.Callback
             mapCamera = new MapCamera(windowSize.x / 2, windowSize.y / 2, 0, 1);
             gameStart = false;
         }
-        canvas.save();
+       canvas.save();
         ///ИНТЕРФЕЙС И ЧАНКИ
         canvas.drawColor(Color.rgb(200, 200, 200));
         testRectangle.draw(canvas);
@@ -169,8 +172,10 @@ public class MapPanel extends SurfaceView implements SurfaceHolder.Callback
             MapWallPoint value = entry.getValue();
             value.draw(canvas);
         }
-
-        canvas.restore();
+       canvas.restore();
+       // canvas.scale(scaleFactor,scaleFactor);
+        //mapCamera.draw(canvas, true);
+        //canvas.restore();
     }
         //
 

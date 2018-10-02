@@ -18,19 +18,12 @@ public class MapCamera extends MapObject
     //private float dX;
     //private float dY;
     //private boolean gameStarted=true;
+    private float scale;
     public MapCamera(float locationX,float locationY,float rotation,float zoom)
     {
         this.location=new PointF(locationX,locationY);
-       // this.location.x=locationX;
-       // this.location.y=locationY;
         this.rotation=rotation;
-        //this.
-        //this.image=resorce;
-        //privotX=//image.getHeight()/2;
-        //privotY=//image.getWidth()/2;
-        //this.locationX+=privotX;
-        //this.locationY+=privotY;
-        //tempLocation=new PointF(0,0);
+        this.scale=zoom;
     }
 
     @Override
@@ -43,20 +36,20 @@ public class MapCamera extends MapObject
     public void draw(Canvas canvas,boolean drawPrivot)
     {
 
-      Paint paint= new Paint();
-      paint.setColor(Color.rgb(255,0,255));
+        Paint paint= new Paint();
+        paint.setColor(Color.rgb(255,0,255));
         //canvas.rotate(rotation,location.x,location.y);
         if(drawPrivot)
             canvas.drawRect(location.x-40,location.y-40,location.x+40,location.y+40,paint);
-        canvas.translate(location.x,location.y);
-       // canvas.
-        //canvas.drawBitmap(image,locationX-privotX,locationY-privotY,paint);
 
-       // rotation=0;
+        canvas.translate(location.x,location.y);
+        canvas.scale(scale,scale);
+
+
+
+        // rotation=0;
 
        // canvas.restore();
-
-        // TODO: Implement this method
     }
 
     @Override
@@ -71,10 +64,11 @@ public class MapCamera extends MapObject
         //dY=0;
     }
 
-    public void update(PointF offsetXY)
+    public void update(PointF offsetXY,float scale)
     {
         location.x-=offsetXY.x;
         location.y-=offsetXY.y;
+        this.scale=scale;
     }
     public void addRotation(int degree)
     {

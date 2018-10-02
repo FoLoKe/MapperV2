@@ -114,6 +114,7 @@ public class MainActivity extends Activity
         Spinner spin = findViewById(R.id.spinner);
         ArrayAdapter<String> adapter = new ArrayAdapter<String>(this, R.layout.row, R.id.spin_text, spinList);
         spin.setAdapter(adapter);
+        spin.setVisibility(View.VISIBLE);
         spin.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
@@ -126,7 +127,25 @@ public class MainActivity extends Activity
 
             }
         });
+        spin.setVisibility(View.VISIBLE);
 
+        Button zoom_down_move = findViewById(R.id.downButton);
+        // Устанавливаем действие по нажатию
+        zoom_down_move.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                mapPanel.scaleFactor+=0.25;
+            }
+        });
+
+        Button zoom_up_move = findViewById(R.id.upButton);
+        // Устанавливаем действие по нажатию
+        zoom_up_move.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                mapPanel.scaleFactor-=0.25;
+            }
+        });
         // Установка размеров кнопок
         ButtonSize();
 
@@ -287,7 +306,8 @@ public class MainActivity extends Activity
             // Устанавливаем картинку
             EM.setBackground(img);
             // Изменяем состояние списка:
-            spin.setVisibility(View.VISIBLE);
+            spin.setVisibility(View.INVISIBLE);
+
             mapPanel.movable=true;
         }
         // Включаем редактирование
@@ -297,7 +317,7 @@ public class MainActivity extends Activity
             // Устанавливаем картинку
             EM.setBackground(img);
             // Изменяем состояние списка:
-            spin.setVisibility(View.INVISIBLE);
+            spin.setVisibility(View.VISIBLE);
             mapPanel.movable=false;
         }
     }
