@@ -38,15 +38,13 @@ public class MapCamera extends MapObject
 
         Paint paint= new Paint();
         paint.setColor(Color.rgb(255,0,255));
-        //canvas.rotate(rotation,location.x,location.y);
+
         if(drawPrivot)
             canvas.drawRect(location.x-40,location.y-40,location.x+40,location.y+40,paint);
+       // canvas.restore();
 
         canvas.translate(location.x,location.y);
         canvas.scale(scale,scale);
-
-
-
         // rotation=0;
 
        // canvas.restore();
@@ -102,5 +100,10 @@ public class MapCamera extends MapObject
     {
         return location.y;
     }
-
+    public PointF getWorldLocation(){
+        return location;
+}
+    public float getWorldScale(){
+        return scale;
+    }
 }

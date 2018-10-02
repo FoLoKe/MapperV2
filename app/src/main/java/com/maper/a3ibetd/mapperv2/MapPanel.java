@@ -146,7 +146,11 @@ public class MapPanel extends SurfaceView implements SurfaceHolder.Callback
             mapCamera = new MapCamera(windowSize.x / 2, windowSize.y / 2, 0, 1);
             gameStart = false;
         }
-       canvas.save();
+        //setTranslationX(1000);
+        //setRotation(10);
+        //this.setX(1000);
+        //canvas.
+        canvas.save();
         ///ИНТЕРФЕЙС И ЧАНКИ
         canvas.drawColor(Color.rgb(200, 200, 200));
         testRectangle.draw(canvas);
@@ -173,9 +177,11 @@ public class MapPanel extends SurfaceView implements SurfaceHolder.Callback
             value.draw(canvas);
         }
        canvas.restore();
+
        // canvas.scale(scaleFactor,scaleFactor);
         //mapCamera.draw(canvas, true);
         //canvas.restore();
+
     }
         //
 
@@ -200,7 +206,7 @@ public class MapPanel extends SurfaceView implements SurfaceHolder.Callback
                         {
                             Integer key = entry.getKey();
                             MapWallPoint value = entry.getValue();
-                            RectF tempRect=new RectF(x-10-screenPrivot.x,y-10-screenPrivot.y,x+10-screenPrivot.x,y+10-screenPrivot.y);
+                            RectF tempRect=new RectF((x-screenPrivot.x-5)/mapCamera.getWorldScale(),(y-screenPrivot.y-5)/mapCamera.getWorldScale(),(x-screenPrivot.x+5)/mapCamera.getWorldScale(),(y-screenPrivot.y+5)/mapCamera.getWorldScale());
 
                             if(value.collision(tempRect))
 
@@ -261,7 +267,7 @@ public class MapPanel extends SurfaceView implements SurfaceHolder.Callback
     public void putWallPoint(HashMap<Integer,MapWallPoint> tempMapWallPoints)
     {
 
-        MapWallPoints.put(MapWallPoints.size(), new MapWallPoint(Color.rgb(0, 255, 0), x-screenPrivot.x, y-screenPrivot.y, 0, 50, 50, MapWallPoints.size(),tempMapWallPoints));
+        MapWallPoints.put(MapWallPoints.size(), new MapWallPoint(Color.rgb(0, 255, 0), (x-screenPrivot.x)/mapCamera.getWorldScale(), (y-screenPrivot.y)/mapCamera.getWorldScale(), 0, 50, 50, MapWallPoints.size(),tempMapWallPoints));
     }
 }
 
