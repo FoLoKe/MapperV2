@@ -4,6 +4,7 @@ package com.maper.a3ibetd.mapperv2;
 import android.Manifest;
 import android.app.Activity;
 import android.app.AlertDialog;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.pm.PackageManager;
 import android.content.res.Resources;
@@ -49,6 +50,7 @@ public class MainActivity extends Activity
 {
     private String fileName ="Map";
     MapPanel mapPanel;
+    Context context;
     // Состояние кнопки редактирования/сдвига
     public Boolean edit_move_Condition = false;
     String[] spinList = {"Стена","Дверь","Маршрут"};
@@ -60,6 +62,7 @@ public class MainActivity extends Activity
                 WindowManager.LayoutParams.FLAG_FULLSCREEN);
         setContentView(R.layout.main);
 
+        context = this;
         Button saveButton =findViewById(R.id.saveButton);
         mapPanel=findViewById(R.id.canvasPanel);
 
@@ -312,6 +315,11 @@ public class MainActivity extends Activity
         }
         // Включаем редактирование
         else{
+            ///////////////////////////
+            /////Удалить этот код//////
+            SomeNameFunction(v);
+            ///////////////////////////
+
             // Получаем картинку
             Drawable img = res.getDrawable(R.drawable.edit);
             // Устанавливаем картинку
@@ -366,6 +374,53 @@ public class MainActivity extends Activity
                 dialog.cancel();
             }
         });
+
+        // Создать и показать окно
+        ad.create().show();
+    }
+
+    // Всплывающее окно "4 строки"
+    private void SomeNameFunction(View v){
+        AlertDialog.Builder ad = new AlertDialog.Builder(this);
+
+        // Разметка всплывающего окна
+        final View layout = LayoutInflater.from(this).inflate(R.layout.inputfields, null);
+        ad.setView(layout);
+        ad.setCancelable(false);
+        // Кнопки
+        ad.setPositiveButton("OK", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialogInterface, int i) {
+                // Действие на ОК
+            }
+        });
+        ad.setNeutralButton("Удалить", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialogInterface, int i) {
+                AlertDialog.Builder ad1 = new AlertDialog.Builder(context);
+                ad1.setMessage("Вы уверены, что хотите УДАЛИТЬ??");
+                ad1.setPositiveButton("Да", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i) {
+                        // Действие на удаление
+                    }
+                });
+                ad1.setNegativeButton("Нет", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i) {
+                        dialogInterface.cancel();
+                    }
+                });
+                ad1.show();
+            }
+        });
+        ad.setNegativeButton("Отмена", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialogInterface, int i) {
+                dialogInterface.cancel();
+            }
+        });
+
 
         // Создать и показать окно
         ad.create().show();
