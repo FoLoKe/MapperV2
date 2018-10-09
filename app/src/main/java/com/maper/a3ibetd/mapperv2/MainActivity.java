@@ -315,11 +315,6 @@ public class MainActivity extends Activity
         }
         // Включаем редактирование
         else{
-            ///////////////////////////
-            /////Удалить этот код//////
-            SomeNameFunction(v);
-            ///////////////////////////
-
             // Получаем картинку
             Drawable img = res.getDrawable(R.drawable.edit);
             // Устанавливаем картинку
