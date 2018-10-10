@@ -8,16 +8,11 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.pm.PackageManager;
 import android.content.res.Resources;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.graphics.Color;
-import android.graphics.Point;
-import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.os.Environment;
 import android.support.v4.app.ActivityCompat;
-import android.text.BoringLayout;
 import android.util.DisplayMetrics;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -27,10 +22,11 @@ import android.view.WindowManager;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
-import android.widget.CheckBox;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.Spinner;
+import android.widget.SpinnerAdapter;
 import android.widget.TextView;
 
 import java.io.BufferedReader;
@@ -51,6 +47,7 @@ public class MainActivity extends Activity
     private String fileName ="Map";
     MapPanel mapPanel;
     Context context;
+    AlertDialog ad;
     // Состояние кнопки редактирования/сдвига
     public Boolean edit_move_Condition = false;
     String[] spinList = {"Стена","Дверь","Маршрут"};
@@ -114,10 +111,12 @@ public class MainActivity extends Activity
             }
         });
         // Выпадающий список
+
         Spinner spin = findViewById(R.id.spinner);
         ArrayAdapter<String> adapter = new ArrayAdapter<String>(this, R.layout.row, R.id.spin_text, spinList);
         spin.setAdapter(adapter);
-        spin.setVisibility(View.VISIBLE);
+
+
         spin.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
@@ -159,6 +158,11 @@ public class MainActivity extends Activity
         Button EM = findViewById(R.id.edit_move);
         Button LU = findViewById(R.id.upButton);
         Button LD = findViewById(R.id.downButton);
+        Button ZP = findViewById(R.id.plusButton);
+        Button ZM = findViewById(R.id.minusButton);
+        Button SB = findViewById(R.id.saveButton);
+        Button PB = findViewById(R.id.coordButton);
+        Button LB = findViewById(R.id.loadButton);
         // Получение метрик дисплея (размеров)
         DisplayMetrics met = new DisplayMetrics();
         getWindowManager().getDefaultDisplay().getMetrics(met);
@@ -168,13 +172,22 @@ public class MainActivity extends Activity
             s = met.widthPixels/9;
         else
             s = met.heightPixels/9;
-        EM.getLayoutParams().width=s;
-        EM.getLayoutParams().height=s;
-        LU.getLayoutParams().width=s;
-        LU.getLayoutParams().height=s;
-        LD.getLayoutParams().width=s;
-        LD.getLayoutParams().height=s;
+        EditButtonSize(EM,s,s);
+        EditButtonSize(LU,s,s);
+        EditButtonSize(LD,s,s);
+        EditButtonSize(ZP,s,s);
+        EditButtonSize(ZM,s,s);
+        EditButtonSize(SB,s*2,s);
+        EditButtonSize(PB,s*2,s);
+        EditButtonSize(LB,s*2,s);
+
     }
+
+    private void EditButtonSize(Button but, int w, int h){
+        but.getLayoutParams().width=w;
+        but.getLayoutParams().height=h;
+    }
+
     public String openFile(String fileName,int floorNumber) {
         String line="";
         try {
@@ -375,29 +388,27 @@ public class MainActivity extends Activity
     }
 
     // Всплывающее окно "4 строки"
-    private void SomeNameFunction(View v){
-        AlertDialog.Builder ad = new AlertDialog.Builder(this);
+    private void PointFunction(View v){
+        AlertDialog.Builder adb = new AlertDialog.Builder(this);
 
         // Разметка всплывающего окна
-        final View layout = LayoutInflater.from(this).inflate(R.layout.inputfields, null);
-        ad.setView(layout);
-        ad.setCancelable(false);
-        // Кнопки
-        ad.setPositiveButton("OK", new DialogInterface.OnClickListener() {
+        final View layout = LayoutInflater.from(this).inflate(R.layout.point_layout, null);
+        adb.setView(layout);
+        adb.setCancelable(false);
+
+        Button del = layout.findViewById(R.id.ad_del);
+        del.setOnClickListener(new OnClickListener() {
             @Override
-            public void onClick(DialogInterface dialogInterface, int i) {
-                // Действие на ОК
-            }
-        });
-        ad.setNeutralButton("Удалить", new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialogInterface, int i) {
+            public void onClick(View view) {
                 AlertDialog.Builder ad1 = new AlertDialog.Builder(context);
-                ad1.setMessage("Вы уверены, что хотите УДАЛИТЬ??");
+                ad1.setMessage("Вы уверены, что хотите удалить?");
                 ad1.setPositiveButton("Да", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialogInterface, int i) {
-                        // Действие на удаление
+                        // Точно удалить
+
+                        // Закрытие всплывшего окна (которое большое)
+                        ad.dismiss();
                     }
                 });
                 ad1.setNegativeButton("Нет", new DialogInterface.OnClickListener() {
@@ -409,15 +420,29 @@ public class MainActivity extends Activity
                 ad1.show();
             }
         });
-        ad.setNegativeButton("Отмена", new DialogInterface.OnClickListener() {
+
+        Button cancelButt = layout.findViewById(R.id.ad_cancel);
+        cancelButt.setOnClickListener(new OnClickListener() {
             @Override
-            public void onClick(DialogInterface dialogInterface, int i) {
-                dialogInterface.cancel();
+            public void onClick(View view) {
+                ad.dismiss();
             }
         });
 
+        Button okButt = layout.findViewById(R.id.ad_ok);
+        okButt.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                // Принять настройки
+
+                // Закрыть всплывающее окно
+                ad.dismiss();
+
+            }
+        });
 
         // Создать и показать окно
-        ad.create().show();
+        ad = adb.create();
+        ad.show();
     }
 }

@@ -25,42 +25,66 @@
 
 			<Button
 				android:id="@+id/saveButton"
-				android:layout_width="wrap_content"
-				android:layout_height="wrap_content"
-				android:text="Сохранить" />
+				android:layout_width="@dimen/button_double_size"
+				android:layout_height="@dimen/button_size"
+				android:layout_margin="@dimen/button_margin"
+                android:background="@drawable/save" />
 
 			<Button
 				android:id="@+id/coordButton"
-				android:layout_width="wrap_content"
-				android:layout_height="wrap_content"
-				android:text="Установить точку" />
+				android:layout_width="@dimen/button_double_size"
+				android:layout_height="@dimen/button_size"
+				android:layout_margin="@dimen/button_margin"
+				android:background="@drawable/place" />
 
 			<Button
 				android:id="@+id/loadButton"
-				android:layout_width="wrap_content"
-				android:layout_height="wrap_content"
-				android:text="Загрузить" />
+				android:layout_width="@dimen/button_double_size"
+				android:layout_height="@dimen/button_size"
+				android:layout_margin="@dimen/button_margin"
+				android:background="@drawable/load" />
 		</LinearLayout>
 	</HorizontalScrollView>
 
 	<LinearLayout
 		android:layout_width="wrap_content"
 		android:layout_height="match_parent"
-		android:layout_marginRight="5dp"
+		android:orientation="vertical"
+		android:layout_gravity="left"
+		android:gravity="center">
+
+		<Button
+			android:layout_width="@dimen/button_size"
+			android:layout_height="@dimen/button_size"
+			android:background="@drawable/z_plus"
+			android:id="@+id/plusButton"/>
+
+		<Button
+			android:layout_width="@dimen/button_size"
+			android:layout_height="@dimen/button_size"
+			android:layout_margin="@dimen/button_margin"
+			android:background="@drawable/z_minus"
+			android:id="@+id/minusButton"/>
+
+	</LinearLayout>
+
+	<LinearLayout
+		android:layout_width="wrap_content"
+		android:layout_height="match_parent"
 		android:orientation="vertical"
 		android:layout_gravity="right"
 		android:gravity="center">
 
 		<Button
 			android:id="@+id/upButton"
-			android:layout_width="40dp"
-			android:layout_height="40dp"
-			android:layout_marginBottom="5dp"
+			android:layout_width="@dimen/button_size"
+			android:layout_height="@dimen/button_size"
 			android:background="@drawable/levelup"/>
         <Button
             android:id="@+id/downButton"
-            android:layout_width="40dp"
-            android:layout_height="40dp"
+			android:layout_width="@dimen/button_size"
+			android:layout_height="@dimen/button_size"
+			android:layout_margin="@dimen/button_margin"
             android:background="@drawable/leveldown"/>
 	</LinearLayout>
 
@@ -69,8 +93,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="top|right"
-        android:layout_marginRight="5dp"
-        android:layout_marginTop="5dp"
+        android:layout_margin="@dimen/button_margin"
         android:background="@drawable/edit" />
 
 	<Spinner
@@ -79,10 +102,9 @@
 		android:layout_height="wrap_content"
 		android:layout_gravity="top|left"
 		android:gravity="center"
-		android:layout_marginLeft="5dp"
-		android:layout_marginTop="5dp"
+		android:layout_margin="@dimen/button_margin"
 		android:background="#50ffe4c4"
-		android:visibility="invisible"
+		android:visibility="visible"
 		android:spinnerMode="dropdown" />
 
 </FrameLayout>

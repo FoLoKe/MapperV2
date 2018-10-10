@@ -1,3 +1,8 @@
 <resources>
     <dimen name="fab_margin">16dp</dimen>
+    <dimen name="text_activity_head">20dp</dimen>
+    <dimen name="text_activity_body">18dp</dimen>
+    <dimen name="button_size">40dp</dimen>
+    <dimen name="button_double_size">80dp</dimen>
+    <dimen name="button_margin">5dp</dimen>
 </resources>
