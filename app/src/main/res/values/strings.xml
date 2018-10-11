@@ -6,5 +6,10 @@
     <string name="text1">Text1</string>
     <string name="coordinates">x,y</string>
     <string name="neighbors">Соседи</string>
+    <string-array name="spin_list">
+        <item>Стена</item>
+        <item>Дверь</item>
+        <item>Маршрут</item>
+    </string-array>
 
 </resources>

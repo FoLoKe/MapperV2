@@ -51,6 +51,8 @@ public class MainActivity extends Activity
     // Состояние кнопки редактирования/сдвига
     public Boolean edit_move_Condition = false;
     String[] spinList = {"Стена","Дверь","Маршрут"};
+    int[] spinIcons = {R.drawable.wall,R.drawable.door,R.drawable.way};
+
     protected void onCreate(Bundle savedInstanceState)
     {
         super.onCreate(savedInstanceState);
@@ -113,7 +115,8 @@ public class MainActivity extends Activity
         // Выпадающий список
 
         Spinner spin = findViewById(R.id.spinner);
-        ArrayAdapter<String> adapter = new ArrayAdapter<String>(this, R.layout.row, R.id.spin_text, spinList);
+        //ArrayAdapter<String> adapter = new ArrayAdapter<String>(this, R.layout.row, R.id.spin_text, spinList);
+        MyCustomAdapter adapter = new MyCustomAdapter(this, R.layout.row, spinList);
         spin.setAdapter(adapter);
 
 
@@ -328,6 +331,10 @@ public class MainActivity extends Activity
         }
         // Включаем редактирование
         else{
+            ////////////////////////////
+            //////Удалить этот код//////
+            PointFunction(v);
+            ////////////////////////////
             // Получаем картинку
             Drawable img = res.getDrawable(R.drawable.edit);
             // Устанавливаем картинку
@@ -389,8 +396,8 @@ public class MainActivity extends Activity
 
     // Всплывающее окно "4 строки"
     private void PointFunction(View v){
-        AlertDialog.Builder adb = new AlertDialog.Builder(this);
 
+        AlertDialog.Builder adb = new AlertDialog.Builder(this);
         // Разметка всплывающего окна
         final View layout = LayoutInflater.from(this).inflate(R.layout.point_layout, null);
         adb.setView(layout);
@@ -441,8 +448,46 @@ public class MainActivity extends Activity
             }
         });
 
+        // Получение метрик дисплея (размеров)
+        DisplayMetrics met = new DisplayMetrics();
+        getWindowManager().getDefaultDisplay().getMetrics(met);
+        // Задание размеров кнопок
+        int s;
+        if(met.widthPixels<met.heightPixels)
+            s = met.widthPixels/9;
+        else
+            s = met.heightPixels/9;
+        // Изменение размеров кнопок
+        EditButtonSize(okButt,2*s,s);
+        EditButtonSize(cancelButt,2*s,s);
+        EditButtonSize(del,2*s,s);
         // Создать и показать окно
         ad = adb.create();
         ad.show();
+    }
+
+    public class MyCustomAdapter extends ArrayAdapter<String> {
+        public MyCustomAdapter(Context context, int textViewResourceId, String[] objects) {
+            super(context, textViewResourceId, objects);
+        }
+        @Override
+        public View getDropDownView(int position, View convertView, ViewGroup parent) {
+            return getCustomView(position, convertView, parent);
+        }
+        @Override
+        public View getView(int position, View convertView, ViewGroup parent) {
+            return getCustomView(position, convertView, parent);
+        }
+        public View getCustomView(int position, View convertView, ViewGroup parent) {
+
+            LayoutInflater inflater = getLayoutInflater();
+            View row = inflater.inflate(R.layout.row, parent, false);
+            TextView label = (TextView) row.findViewById(R.id.spin_text);
+            label.setText(spinList[position]);
+
+            ImageView icon = (ImageView) row.findViewById(R.id.spin_icon);
+            icon.setImageResource(spinIcons[position]);
+            return row;
+        }
     }
 }

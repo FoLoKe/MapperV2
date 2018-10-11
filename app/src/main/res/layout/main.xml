@@ -101,9 +101,9 @@
 		android:layout_width="wrap_content"
 		android:layout_height="wrap_content"
 		android:layout_gravity="top|left"
-		android:gravity="center"
+		android:gravity="left"
 		android:layout_margin="@dimen/button_margin"
-		android:background="#50ffe4c4"
+		android:background="#10ffe4c4"
 		android:visibility="visible"
 		android:spinnerMode="dropdown" />
 

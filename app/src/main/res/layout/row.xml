@@ -9,7 +9,8 @@
         android:id="@+id/spin_icon"
         android:layout_width="@dimen/button_size"
         android:layout_height="@dimen/button_size"
-        android:src="@drawable/backup"/>
+        android:src="@drawable/way"
+        />
 
     <TextView
         android:id="@+id/spin_text"
