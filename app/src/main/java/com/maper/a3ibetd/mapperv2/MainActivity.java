@@ -103,7 +103,34 @@ public class MainActivity extends Activity
                      }
                  }
                 );
+        //кнопка отдаление
+        Button zoomInButton =findViewById(R.id.plusButton);
+        zoomInButton.setOnClickListener
+                (new OnClickListener()
+                 {
+                     @Override
+                     public void onClick(View v)
+                     {
+
+                         mapPanel.scaleFactor+=0.25;
+                     }
+                 }
+                );
+        //кнопка приближения
+        Button zoomOutButton =findViewById(R.id.minusButton);
+        zoomOutButton.setOnClickListener
+                (new OnClickListener()
+                 {
+                     @Override
+                     public void onClick(View v)
+                     {
+
+                         mapPanel.scaleFactor-=0.25;
+                     }
+                 }
+                );
         // Кнопка редактирования/сдвига
+
         Button edit_move = findViewById(R.id.edit_move);
         // Устанавливаем действие по нажатию
         edit_move.setOnClickListener(new OnClickListener() {
@@ -118,6 +145,7 @@ public class MainActivity extends Activity
         //ArrayAdapter<String> adapter = new ArrayAdapter<String>(this, R.layout.row, R.id.spin_text, spinList);
         MyCustomAdapter adapter = new MyCustomAdapter(this, R.layout.row, spinList);
         spin.setAdapter(adapter);
+
 
 
         spin.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
@@ -139,7 +167,7 @@ public class MainActivity extends Activity
         zoom_down_move.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View view) {
-                mapPanel.scaleFactor+=0.25;
+               // mapPanel.scaleFactor+=0.25;
             }
         });
 
@@ -148,7 +176,7 @@ public class MainActivity extends Activity
         zoom_up_move.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View view) {
-                mapPanel.scaleFactor-=0.25;
+               // mapPanel.scaleFactor-=0.25;
             }
         });
         // Установка размеров кнопок
@@ -247,7 +275,8 @@ public class MainActivity extends Activity
                                     return "error no point";
                                     }
                             }
-                            mapPanel.MapWallPoints.put(index,new MapWallPoint(Color.rgb(0,255,0),x,y,0,50,50,mapPanel.MapWallPoints.size(),tempMapWallPoints));
+                            mapPanel.addMapWallPoint(index,x,y,tempMapWallPoints);
+                            //mapPanel.addMapWallPoint(index,new MapWallPoint(Color.rgb(0,255,0),x,y,0,50,50,mapPanel.MapWallPoints.size(),tempMapWallPoints));
                           ///  tempMapWallPoints.clear();
                         }
                     }
@@ -333,7 +362,7 @@ public class MainActivity extends Activity
         else{
             ////////////////////////////
             //////Удалить этот код//////
-            PointFunction(v);
+            //PointFunction(v);
             ////////////////////////////
             // Получаем картинку
             Drawable img = res.getDrawable(R.drawable.edit);
@@ -395,13 +424,34 @@ public class MainActivity extends Activity
     }
 
     // Всплывающее окно "4 строки"
-    private void PointFunction(View v){
-
+   public void PointFunction(final int objectId){
+       if(!(mapPanel.MapWallPoints.containsKey(objectId)))
+           return;
         AlertDialog.Builder adb = new AlertDialog.Builder(this);
         // Разметка всплывающего окна
+       final int id=objectId;
         final View layout = LayoutInflater.from(this).inflate(R.layout.point_layout, null);
         adb.setView(layout);
         adb.setCancelable(false);
+        TextView headline=layout.findViewById(R.id.headline);
+        headline.setText("POINT #"+id);
+        final EditText pointCoord=layout.findViewById(R.id.point_coord);
+        pointCoord.setText(""+mapPanel.MapWallPoints.get(objectId).getWorldLocation().x+", "+mapPanel.MapWallPoints.get(objectId).getWorldLocation().y);
+        final EditText neighbors = layout.findViewById(R.id.neighbors);
+
+
+        String setNeigboursRow="";
+       for(Map.Entry<Integer,MapWallPoint> entry: mapPanel.MapWallPoints.get(objectId).walls.entrySet())
+       {
+           setNeigboursRow+=entry.getKey()+", ";
+
+       }
+       //if(setNeigboursRow.endsWith(", "));
+        neighbors.setText(setNeigboursRow);
+
+
+
+
 
         Button del = layout.findViewById(R.id.ad_del);
         del.setOnClickListener(new OnClickListener() {
@@ -413,7 +463,7 @@ public class MainActivity extends Activity
                     @Override
                     public void onClick(DialogInterface dialogInterface, int i) {
                         // Точно удалить
-
+                        mapPanel.removePoint(id);
                         // Закрытие всплывшего окна (которое большое)
                         ad.dismiss();
                     }
@@ -441,7 +491,31 @@ public class MainActivity extends Activity
             @Override
             public void onClick(View view) {
                 // Принять настройки
+                //
+                String rowCoords=pointCoord.getText().toString();
+                String[] tempCoordRows = rowCoords.split(", ");
+                //
 
+                String rowWalls = neighbors.getText().toString();
+
+                String[] tempWallsRows = rowWalls.split(", ");
+                HashMap<Integer, MapWallPoint> tempMapWallPoints = new HashMap<>();
+                if (rowWalls.length()>0)
+                {
+                    for (int i = 0; i < tempWallsRows.length; i++) {
+                        int j=Integer.valueOf(tempWallsRows[i]);
+                        if (mapPanel.MapWallPoints.containsKey(Integer.valueOf(tempWallsRows[i]))) {
+                            tempMapWallPoints.put(Integer.valueOf(tempWallsRows[i]), mapPanel.MapWallPoints.get(Integer.valueOf(tempWallsRows[i])));
+                        } else {
+                            return;
+                        }
+                    }
+
+                }
+                float x=Float.valueOf(tempCoordRows[0]);
+                float y=Float.valueOf(tempCoordRows[1]);
+
+                mapPanel.changeWallPoint(objectId,x,y,tempMapWallPoints);
                 // Закрыть всплывающее окно
                 ad.dismiss();
 

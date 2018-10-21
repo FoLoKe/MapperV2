@@ -55,14 +55,14 @@ public class MapWallPoint extends MapObject
             canvas.drawRect(collisionRect,paint);
             int tempColor = paint.getColor();
             this.paint.setStyle(Paint.Style.STROKE);
-            for(int i=0;i<indexes.length;i++)
+            for(Map.Entry<Integer,MapWallPoint> entry: walls.entrySet())
             {
-                if (walls.get(indexes[i])!=null) {
-                    canvas.drawLine(walls.get(indexes[i]).getWorldLocation().x, walls.get(indexes[i]).getWorldLocation().y, location.x, location.y, paint);
+                if (entry.getValue()!=null) {
+                    canvas.drawLine(entry.getValue().getWorldLocation().x, entry.getValue().getWorldLocation().y, location.x, location.y, paint);
                 }
                 else
                 {
-                    walls.remove(indexes[i]);
+                    walls.remove(entry.getKey());
                 }
             }
 
@@ -118,6 +118,16 @@ public class MapWallPoint extends MapObject
     {
         boolean debug=collisionRect.intersect(rect);
        return debug;
+    }
+    public void setNeigbours(HashMap<Integer,MapWallPoint> tempWalls)
+    {
+        //////STOP WORKING WITH LOCALS!!!!
+        //walls=tempWalls; <-WRONG
+        walls.clear();
+        for(Map.Entry<Integer,MapWallPoint> entry: tempWalls.entrySet())
+        {
+            walls.put(entry.getKey(),entry.getValue());
+        }
     }
 
 }

@@ -63,6 +63,7 @@ public class MainThread extends Thread
 
             totalTime += System.nanoTime()-startTime;
             frameCount++;
+
             if(frameCount==FPS)
             {
                 averageFPS= 1000/((totalTime/frameCount)/1000000);
@@ -70,6 +71,7 @@ public class MainThread extends Thread
                 totalTime=0;
 
                 mapPanel.stringFps=Double.toString(averageFPS);
+
             }
         }
     }

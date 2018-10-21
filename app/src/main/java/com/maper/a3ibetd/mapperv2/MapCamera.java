@@ -1,109 +1,91 @@
 package com.maper.a3ibetd.mapperv2;
 
-import android.graphics.Canvas;
-import android.graphics.Color;
-import android.graphics.Paint;
 import android.graphics.PointF;
 
-public class MapCamera extends MapObject
-{
 
-    //private Bitmap image;
-    //private float locationX;
-    //private float locationY;
-    //private PointF tempLocation;
-    //private int rotation;
-    //private int privotX;
-    //private int privotY;
-    //private float dX;
-    //private float dY;
-    //private boolean gameStarted=true;
+import java.lang.annotation.Target;
+import android.graphics.*;
+
+public class MapCamera {
+    private PointF location;
+    private PointF pointOfLook;
+    private float screenXcenter,screenYcenter;
     private float scale;
-    public MapCamera(float locationX,float locationY,float rotation,float zoom)
+    private RectF screenRect;
+    public MapCamera(float x,float y,float scale,PointF target)
     {
-        this.location=new PointF(locationX,locationY);
-        this.rotation=rotation;
-        this.scale=zoom;
-    }
-
-    @Override
-    public void draw(Canvas canvas)
-    {
-        // TODO: Implement this method
-    }
-
-
-    public void draw(Canvas canvas,boolean drawPrivot)
-    {
-
-        Paint paint= new Paint();
-        paint.setColor(Color.rgb(255,0,255));
-
-        if(drawPrivot)
-            canvas.drawRect(location.x-40,location.y-40,location.x+40,location.y+40,paint);
-       // canvas.restore();
-
-        canvas.translate(location.x,location.y);
-        canvas.scale(scale,scale);
-        // rotation=0;
-
-       // canvas.restore();
-    }
-
-    @Override
-    public void update()
-    {
-        // TODO: Implement this method
-        //locationX+=dX;
-        //locationY+=dY;
-        //tempLocation.x=dX;
-        //tempLocation.y=dY;
-        //dX=0;
-        //dY=0;
-    }
-
-    public void update(PointF offsetXY,float scale)
-    {
-        location.x-=offsetXY.x;
-        location.y-=offsetXY.y;
+        this.pointOfLook=target;
+        this.location=new PointF(x,y);
         this.scale=scale;
+        this.screenRect=new RectF(0,0,1,1);
     }
-    public void addRotation(int degree)
+
+    public void tick(float scale,float x,float y)
     {
-        this.rotation+=degree-90;
-        if (this.rotation>360)
-            this.rotation-=360;
-        if (this.rotation<0)
-            this.rotation+=360;
+        this.scale=scale;
+        this.location.x= x;
+        this.location.y= y;
+        pointOfLook.x=x;
+        pointOfLook.y=y;
+    }
+
+    public void render(Canvas canvas)
+    {
+        Paint tPaint=new Paint();
+        tPaint.setStyle(Paint.Style.STROKE);
+        tPaint.setColor(Color.rgb(0,255,0));
+        canvas.drawRect(screenRect,tPaint);
+        canvas.drawCircle((pointOfLook).x,(pointOfLook).y,canvas.getHeight()/(8*scale),tPaint);
+        canvas.drawCircle((pointOfLook).x,(pointOfLook).y,canvas.getHeight()/(2*scale),tPaint);
 
     }
-    public int findRotation(PointF point)
-    {
-        //double A=Math.atan2(locationY-point.y,locationX-point.x)/3.14*180;
-        //return (int)A;
-        return 0;
-    }
-    public void setLocation(PointF location)
-    {
-        PointF tempMoveLocation=new PointF(0,0);
-        tempMoveLocation.x=this.location.x-location.x;
-        tempMoveLocation.y=this.location.y-location.y;
-        this.location.x+=tempMoveLocation.x;
-        this.location.y+=tempMoveLocation.y;
 
-    }
-    public float getLocationX()
+    public float getxOffset()
     {
         return location.x;
     }
-    public float getLocationY()
+
+    public float getyOffset()
     {
         return location.y;
     }
-    public PointF getWorldLocation(){
-        return location;
-}
-    public float getWorldScale(){
+
+    public void setPointOfLook(PointF pointOfLook) {
+        this.pointOfLook = pointOfLook;
+    }
+
+    public void setScreenXcenter(float screenXcenter) {
+        this.screenXcenter = screenXcenter;
+    }
+
+    public void setScreenYcenter(float screenYcenter)
+    {
+        this.screenYcenter=screenYcenter;
+    }
+
+    public float getScale()
+    {
         return scale;
+    }
+
+    public float getScreenXcenter() {
+        return screenXcenter;
+    }
+
+    public float getScreenYcenter() {
+        return screenYcenter;
+    }
+
+    public PointF getWorldLocation()
+    {
+        return location;
+    }
+    public void setScreenRect(float screenW,float screenH)
+    {
+        screenRect.set(pointOfLook.x-screenW/(2*scale),pointOfLook.y-screenH/(2*scale),pointOfLook.y+screenW/(2*scale),pointOfLook.y+screenH/(2*scale));
+    }
+    public RectF getScreenRect()
+    {
+        return screenRect;
     }
 }
