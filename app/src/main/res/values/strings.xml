@@ -2,7 +2,14 @@
 <resources>
 
     <string name="app_name">CustomMapper</string>
-    <string name="hello_world">Hello world!</string>
     <string name="title_activity_set_coord">Введите координаты</string>
+    <string name="text1">Text1</string>
+    <string name="coordinates">x,y</string>
+    <string name="neighbors">Соседи</string>
+    <string-array name="spin_list">
+        <item>Стена</item>
+        <item>Дверь</item>
+        <item>Маршрут</item>
+    </string-array>
 
 </resources>

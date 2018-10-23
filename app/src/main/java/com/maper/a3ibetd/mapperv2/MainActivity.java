@@ -4,24 +4,30 @@ package com.maper.a3ibetd.mapperv2;
 import android.Manifest;
 import android.app.Activity;
 import android.app.AlertDialog;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.pm.PackageManager;
 import android.content.res.Resources;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.graphics.Color;
-import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.os.Environment;
 import android.support.v4.app.ActivityCompat;
+import android.util.DisplayMetrics;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
+import android.view.ViewGroup;
 import android.view.WindowManager;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
-import android.widget.CheckBox;
 import android.widget.EditText;
+import android.widget.ImageView;
+import android.widget.LinearLayout;
+import android.widget.Spinner;
+import android.widget.SpinnerAdapter;
+import android.widget.TextView;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
@@ -40,8 +46,13 @@ public class MainActivity extends Activity
 {
     private String fileName ="Map";
     MapPanel mapPanel;
+    Context context;
+    AlertDialog ad;
     // Состояние кнопки редактирования/сдвига
-    Boolean edit_move_Condition = false;
+    public Boolean edit_move_Condition = false;
+    String[] spinList = {"Стена","Дверь","Маршрут"};
+    int[] spinIcons = {R.drawable.wall,R.drawable.door,R.drawable.way};
+
     protected void onCreate(Bundle savedInstanceState)
     {
         super.onCreate(savedInstanceState);
@@ -50,6 +61,7 @@ public class MainActivity extends Activity
                 WindowManager.LayoutParams.FLAG_FULLSCREEN);
         setContentView(R.layout.main);
 
+        context = this;
         Button saveButton =findViewById(R.id.saveButton);
         mapPanel=findViewById(R.id.canvasPanel);
 
@@ -91,7 +103,34 @@ public class MainActivity extends Activity
                      }
                  }
                 );
+        //кнопка отдаление
+        Button zoomInButton =findViewById(R.id.plusButton);
+        zoomInButton.setOnClickListener
+                (new OnClickListener()
+                 {
+                     @Override
+                     public void onClick(View v)
+                     {
+                        if (mapPanel.scaleFactor<mapPanel.maxScale)
+                         mapPanel.scaleFactor+=0.25;
+                     }
+                 }
+                );
+        //кнопка приближения
+        Button zoomOutButton =findViewById(R.id.minusButton);
+        zoomOutButton.setOnClickListener
+                (new OnClickListener()
+                 {
+                     @Override
+                     public void onClick(View v)
+                     {
+                          if (mapPanel.scaleFactor>0.5)
+                         mapPanel.scaleFactor-=0.25;
+                     }
+                 }
+                );
         // Кнопка редактирования/сдвига
+
         Button edit_move = findViewById(R.id.edit_move);
         // Устанавливаем действие по нажатию
         edit_move.setOnClickListener(new OnClickListener() {
@@ -100,8 +139,86 @@ public class MainActivity extends Activity
                 EMClick(view);
             }
         });
+        // Выпадающий список
+
+        Spinner spin = findViewById(R.id.spinner);
+        //ArrayAdapter<String> adapter = new ArrayAdapter<String>(this, R.layout.row, R.id.spin_text, spinList);
+        MyCustomAdapter adapter = new MyCustomAdapter(this, R.layout.row, spinList);
+        spin.setAdapter(adapter);
+
+
+
+        spin.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
+                //((TextView) adapterView.getChildAt(0)).setTextColor(Color.BLUE);
+                //((TextView) adapterView.getChildAt(0)).setTextSize(20);
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> adapterView) {
+
+            }
+        });
+        spin.setVisibility(View.VISIBLE);
+
+        Button zoom_down_move = findViewById(R.id.downButton);
+        // Устанавливаем действие по нажатию
+        zoom_down_move.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View view) {
+               // mapPanel.scaleFactor+=0.25;
+            }
+        });
+
+        Button zoom_up_move = findViewById(R.id.upButton);
+        // Устанавливаем действие по нажатию
+        zoom_up_move.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View view) {
+               // mapPanel.scaleFactor-=0.25;
+            }
+        });
+        // Установка размеров кнопок
+        ButtonSize();
 
     }
+
+    private void ButtonSize(){
+        // Перепись всех кнопк, подвергающихся экзекуции
+        Button EM = findViewById(R.id.edit_move);
+        Button LU = findViewById(R.id.upButton);
+        Button LD = findViewById(R.id.downButton);
+        Button ZP = findViewById(R.id.plusButton);
+        Button ZM = findViewById(R.id.minusButton);
+        Button SB = findViewById(R.id.saveButton);
+        Button PB = findViewById(R.id.coordButton);
+        Button LB = findViewById(R.id.loadButton);
+        // Получение метрик дисплея (размеров)
+        DisplayMetrics met = new DisplayMetrics();
+        getWindowManager().getDefaultDisplay().getMetrics(met);
+        // Задание размеров кнопок
+        int s;
+        if(met.widthPixels<met.heightPixels)
+            s = met.widthPixels/9;
+        else
+            s = met.heightPixels/9;
+        EditButtonSize(EM,s,s);
+        EditButtonSize(LU,s,s);
+        EditButtonSize(LD,s,s);
+        EditButtonSize(ZP,s,s);
+        EditButtonSize(ZM,s,s);
+        EditButtonSize(SB,s*2,s);
+        EditButtonSize(PB,s*2,s);
+        EditButtonSize(LB,s*2,s);
+
+    }
+
+    private void EditButtonSize(Button but, int w, int h){
+        but.getLayoutParams().width=w;
+        but.getLayoutParams().height=h;
+    }
+
     public String openFile(String fileName,int floorNumber) {
         String line="";
         try {
@@ -158,7 +275,8 @@ public class MainActivity extends Activity
                                     return "error no point";
                                     }
                             }
-                            mapPanel.MapWallPoints.put(index,new MapWallPoint(Color.rgb(0,255,0),x,y,0,50,50,mapPanel.MapWallPoints.size(),tempMapWallPoints));
+                            mapPanel.addMapWallPoint(index,x,y,tempMapWallPoints);
+                            //mapPanel.addMapWallPoint(index,new MapWallPoint(Color.rgb(0,255,0),x,y,0,50,50,mapPanel.MapWallPoints.size(),tempMapWallPoints));
                           ///  tempMapWallPoints.clear();
                         }
                     }
@@ -225,6 +343,8 @@ public class MainActivity extends Activity
         Resources res = getResources();
         // Получение самой кнопки
         Button EM = (Button)v;
+        // Заодно получаем выпадающий список
+        Spinner spin = findViewById(R.id.spinner);
         // Инверсируем состояние кнопки
         edit_move_Condition=!edit_move_Condition;
         // Включаем сдвиг
@@ -233,13 +353,24 @@ public class MainActivity extends Activity
             Drawable img = res.getDrawable(R.drawable.move);
             // Устанавливаем картинку
             EM.setBackground(img);
+            // Изменяем состояние списка:
+            spin.setVisibility(View.INVISIBLE);
+
+            mapPanel.movable=true;
         }
         // Включаем редактирование
         else{
+            ////////////////////////////
+            //////Удалить этот код//////
+            //PointFunction(v);
+            ////////////////////////////
             // Получаем картинку
             Drawable img = res.getDrawable(R.drawable.edit);
             // Устанавливаем картинку
             EM.setBackground(img);
+            // Изменяем состояние списка:
+            spin.setVisibility(View.VISIBLE);
+            mapPanel.movable=false;
         }
     }
 
@@ -290,5 +421,153 @@ public class MainActivity extends Activity
 
         // Создать и показать окно
         ad.create().show();
+    }
+
+    // Всплывающее окно "4 строки"
+   public void PointFunction(final int objectId){
+       if(!(mapPanel.MapWallPoints.containsKey(objectId)))
+           return;
+        AlertDialog.Builder adb = new AlertDialog.Builder(this);
+        // Разметка всплывающего окна
+       final int id=objectId;
+        final View layout = LayoutInflater.from(this).inflate(R.layout.point_layout, null);
+        adb.setView(layout);
+        adb.setCancelable(false);
+        TextView headline=layout.findViewById(R.id.headline);
+        headline.setText("POINT #"+id);
+        final EditText pointCoord=layout.findViewById(R.id.point_coord);
+        pointCoord.setText(""+mapPanel.MapWallPoints.get(objectId).getWorldLocation().x+", "+mapPanel.MapWallPoints.get(objectId).getWorldLocation().y);
+        final EditText neighbors = layout.findViewById(R.id.neighbors);
+
+
+        String setNeigboursRow="";
+       for(Map.Entry<Integer,MapWallPoint> entry: mapPanel.MapWallPoints.get(objectId).walls.entrySet())
+       {
+           setNeigboursRow+=entry.getKey()+", ";
+
+       }
+       //if(setNeigboursRow.endsWith(", "));
+        neighbors.setText(setNeigboursRow);
+
+
+
+
+
+        Button del = layout.findViewById(R.id.ad_del);
+        del.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                AlertDialog.Builder ad1 = new AlertDialog.Builder(context);
+                ad1.setMessage("Вы уверены, что хотите удалить?");
+                ad1.setPositiveButton("Да", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i) {
+                        // Точно удалить
+                        mapPanel.removePoint(id);
+                        // Закрытие всплывшего окна (которое большое)
+                        ad.dismiss();
+                    }
+                });
+                ad1.setNegativeButton("Нет", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i) {
+                        dialogInterface.cancel();
+                    }
+                });
+                ad1.show();
+            }
+        });
+
+        Button cancelButt = layout.findViewById(R.id.ad_cancel);
+        cancelButt.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                ad.dismiss();
+            }
+        });
+
+        Button okButt = layout.findViewById(R.id.ad_ok);
+        okButt.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                // Принять настройки
+                //
+                String rowCoords=pointCoord.getText().toString();
+                String[] tempCoordRows = rowCoords.split(", ");
+                //
+
+                String rowWalls = neighbors.getText().toString();
+
+                String[] tempWallsRows = rowWalls.split(", ");
+                HashMap<Integer, MapWallPoint> tempMapWallPoints = new HashMap<>();
+                if (rowWalls.length()>0)
+                {
+                    for (int i = 0; i < tempWallsRows.length; i++) {
+                        try {
+                            int test = Integer.parseInt(tempWallsRows[i]);
+                        }
+                        catch(NumberFormatException e)
+                        {
+                            return;
+                        }
+                        if (mapPanel.MapWallPoints.containsKey(Integer.valueOf(tempWallsRows[i]))) {
+                            tempMapWallPoints.put(Integer.valueOf(tempWallsRows[i]), mapPanel.MapWallPoints.get(Integer.valueOf(tempWallsRows[i])));
+                        } else {
+                            return;
+                        }
+                    }
+
+                }
+                float x=Float.valueOf(tempCoordRows[0]);
+                float y=Float.valueOf(tempCoordRows[1]);
+
+                mapPanel.changeWallPoint(objectId,x,y,tempMapWallPoints);
+                // Закрыть всплывающее окно
+                ad.dismiss();
+
+            }
+        });
+
+        // Получение метрик дисплея (размеров)
+        DisplayMetrics met = new DisplayMetrics();
+        getWindowManager().getDefaultDisplay().getMetrics(met);
+        // Задание размеров кнопок
+        int s;
+        if(met.widthPixels<met.heightPixels)
+            s = met.widthPixels/9;
+        else
+            s = met.heightPixels/9;
+        // Изменение размеров кнопок
+        EditButtonSize(okButt,2*s,s);
+        EditButtonSize(cancelButt,2*s,s);
+        EditButtonSize(del,2*s,s);
+        // Создать и показать окно
+        ad = adb.create();
+        ad.show();
+    }
+
+    public class MyCustomAdapter extends ArrayAdapter<String> {
+        public MyCustomAdapter(Context context, int textViewResourceId, String[] objects) {
+            super(context, textViewResourceId, objects);
+        }
+        @Override
+        public View getDropDownView(int position, View convertView, ViewGroup parent) {
+            return getCustomView(position, convertView, parent);
+        }
+        @Override
+        public View getView(int position, View convertView, ViewGroup parent) {
+            return getCustomView(position, convertView, parent);
+        }
+        public View getCustomView(int position, View convertView, ViewGroup parent) {
+
+            LayoutInflater inflater = getLayoutInflater();
+            View row = inflater.inflate(R.layout.row, parent, false);
+            TextView label = (TextView) row.findViewById(R.id.spin_text);
+            label.setText(spinList[position]);
+
+            ImageView icon = (ImageView) row.findViewById(R.id.spin_icon);
+            icon.setImageResource(spinIcons[position]);
+            return row;
+        }
     }
 }
