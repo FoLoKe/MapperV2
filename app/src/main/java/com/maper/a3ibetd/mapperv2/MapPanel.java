@@ -11,6 +11,8 @@ import java.util.*;
 import android.util.*;
 import android.view.View;
 
+import static java.lang.Math.round;
+
 public class MapPanel extends SurfaceView implements SurfaceHolder.Callback
 {
     private PointF screenPrivot;
@@ -45,6 +47,8 @@ public class MapPanel extends SurfaceView implements SurfaceHolder.Callback
     public int currentFloor=1;
     public HashMap<Integer,MapWallPoint> MapWallPoints;
     private RectF cursorRect;
+
+    private Tile tiles[];
 
 
     /////onTouchEvent
@@ -86,6 +90,13 @@ public class MapPanel extends SurfaceView implements SurfaceHolder.Callback
         mainThread.setRunning(true);
         mainThread.start();
         gameStart=true;
+        tiles=new Tile[10000];
+        BitmapFactory.Options options=new BitmapFactory.Options();
+        options.inScaled=false;
+        Bitmap background=Bitmap.createBitmap(BitmapFactory.decodeResource(getResources(),R.drawable.mapper_background,options));
+        for(int i=0;i<100;i++)
+            for(int j=0;j<100;j++)
+        tiles[i*100+j]=new Tile(i*100,j*100,background);
     }
 
     @Override
@@ -133,11 +144,20 @@ public class MapPanel extends SurfaceView implements SurfaceHolder.Callback
         textMemUsage.update(stringMemUsage);
         textButtonPress.update(mapCamera.getWorldLocation()+"");
         textButtonPress2.update(pointOfTouch+"");
-        testRectangle.setWorldLocation(new PointF(x,y));
+
+        testRectangle.setWorldLocation(new PointF(pointOfTouch.x,pointOfTouch.y));
 
         mapCamera.tick(scaleFactor,mapCamera.getWorldLocation().x+screenOffset.x,mapCamera.getWorldLocation().y+screenOffset.y);
         screenOffset.x=0;
         screenOffset.y=0;
+        mapCamera.setScreenRect(canvasW,canvasH);
+        for(Tile t:tiles)
+        {
+            if(t.getCollsionBox().intersect(mapCamera.getScreenRect()))
+                t.setRenderable(true);
+            else
+                t.setRenderable(false);
+        }
 
     }
     public void draw(Canvas canvas) {
@@ -163,8 +183,8 @@ public class MapPanel extends SurfaceView implements SurfaceHolder.Callback
         //canvas.
         canvas.save();
         ///ИНТЕРФЕЙС И ЧАНКИ
-        canvas.drawColor(Color.rgb(200, 200, 200));
-       // testRectangle.draw(canvas);
+        canvas.drawColor(Color.rgb(0, 0, 0));
+
         textMemUsage.draw(canvas);
         textWidthXHeight.draw(canvas);
         textFPS.draw(canvas);
@@ -183,7 +203,12 @@ public class MapPanel extends SurfaceView implements SurfaceHolder.Callback
        // for (int i = 0; i < MapWallPoints.size(); i++) {
         //    MapWallPoints.get(i).draw(canvas);
         //}
-        canvas.drawRect(cursorRect,paint);
+        for(Tile t:tiles)
+        {
+            t.render(canvas);
+        }
+        testRectangle.draw(canvas);
+        //mapCamera.render(canvas);
         for(Map.Entry<Integer, MapWallPoint> entry : MapWallPoints.entrySet())
         {
             //Integer key = entry.getKey();
@@ -211,6 +236,9 @@ public class MapPanel extends SurfaceView implements SurfaceHolder.Callback
         float tempX=event.getX(),tempY=event.getY();
 
         pointOfTouch.set((x-canvasW/2)/mapCamera.getScale()+mapCamera.getWorldLocation().x,(y-canvasH/2)/mapCamera.getScale()+mapCamera.getWorldLocation().y);
+        ///adjusting to 100px
+        pointOfTouch.set(round(pointOfTouch.x/100)*100,round(pointOfTouch.y/100)*100);
+
         cursorRect=new RectF(pointOfTouch.x,pointOfTouch.y,pointOfTouch.x+40,pointOfTouch.y+40);
         int action=event.getAction();
         switch(action)

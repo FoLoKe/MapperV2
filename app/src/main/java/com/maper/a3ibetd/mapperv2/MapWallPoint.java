@@ -117,6 +117,8 @@ public class MapWallPoint extends MapObject
     public boolean collision(RectF rect)
     {
         boolean debug=collisionRect.intersect(rect);
+        if(debug)
+            collisionRect.set(location.x-sizeX/2,location.y-sizeY/2,location.x+sizeX/2,location.y+sizeY/2);
        return debug;
     }
     public void setNeigbours(HashMap<Integer,MapWallPoint> tempWalls)

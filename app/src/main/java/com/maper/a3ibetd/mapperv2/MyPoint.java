@@ -17,7 +17,8 @@ public class MyPoint extends MapObject
         this.paint=new Paint();
         this.location=new PointF(x,y);
         this.paint.setColor(colorRGB);
-
+        this.paint.setStrokeWidth(5);
+        this.paint.setStyle(Paint.Style.STROKE);
         this.rotation=rotation;
         this.sizeX=sizeX;
         this.sizeY=sizeY;

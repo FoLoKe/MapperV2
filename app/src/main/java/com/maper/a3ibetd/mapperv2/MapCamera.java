@@ -27,6 +27,7 @@ public class MapCamera {
         this.location.y= y;
         pointOfLook.x=x;
         pointOfLook.y=y;
+
     }
 
     public void render(Canvas canvas)
@@ -35,8 +36,7 @@ public class MapCamera {
         tPaint.setStyle(Paint.Style.STROKE);
         tPaint.setColor(Color.rgb(0,255,0));
         canvas.drawRect(screenRect,tPaint);
-        canvas.drawCircle((pointOfLook).x,(pointOfLook).y,canvas.getHeight()/(8*scale),tPaint);
-        canvas.drawCircle((pointOfLook).x,(pointOfLook).y,canvas.getHeight()/(2*scale),tPaint);
+
 
     }
 
@@ -82,10 +82,11 @@ public class MapCamera {
     }
     public void setScreenRect(float screenW,float screenH)
     {
-        screenRect.set(pointOfLook.x-screenW/(2*scale),pointOfLook.y-screenH/(2*scale),pointOfLook.y+screenW/(2*scale),pointOfLook.y+screenH/(2*scale));
+        screenRect.set(pointOfLook.x-screenW/(2*scale),pointOfLook.y-screenH/(2*scale),pointOfLook.x+screenW/(2*scale),pointOfLook.y+screenH/(2*scale));
     }
     public RectF getScreenRect()
     {
         return screenRect;
     }
+
 }

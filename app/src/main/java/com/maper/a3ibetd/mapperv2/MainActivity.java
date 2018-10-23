@@ -503,7 +503,13 @@ public class MainActivity extends Activity
                 if (rowWalls.length()>0)
                 {
                     for (int i = 0; i < tempWallsRows.length; i++) {
-                        int j=Integer.valueOf(tempWallsRows[i]);
+                        try {
+                            int test = Integer.parseInt(tempWallsRows[i]);
+                        }
+                        catch(NumberFormatException e)
+                        {
+                            return;
+                        }
                         if (mapPanel.MapWallPoints.containsKey(Integer.valueOf(tempWallsRows[i]))) {
                             tempMapWallPoints.put(Integer.valueOf(tempWallsRows[i]), mapPanel.MapWallPoints.get(Integer.valueOf(tempWallsRows[i])));
                         } else {
