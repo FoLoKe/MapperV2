@@ -74,9 +74,24 @@ public class MainActivity extends Activity
                      @Override
                      public void onClick(View v)
                      {
-                         saveFile(fileName,mapPanel.currentFloor);
+                         AlertDialog.Builder adb = new AlertDialog.Builder(context);
+                         adb.setNegativeButton("Нет", new DialogInterface.OnClickListener() {
+                             @Override
+                             public void onClick(DialogInterface dialogInterface, int i) {
+                                 dialogInterface.dismiss();
+                             }
+                         });
+                         adb.setPositiveButton("Да", new DialogInterface.OnClickListener() {
+                             @Override
+                             public void onClick(DialogInterface dialogInterface, int i) {
+                                 saveFile(fileName,mapPanel.currentFloor);
 
-                         //mapPanel.stringButtonPress="saved ";
+                                 //mapPanel.stringButtonPress="saved ";
+                                 dialogInterface.dismiss();
+                             }
+                         });
+                         adb.setMessage("Вы уверены, что хотите сохранить?");
+                         adb.create().show();
                      }
                  }
                 );
@@ -98,8 +113,22 @@ public class MainActivity extends Activity
                      @Override
                      public void onClick(View v)
                      {
-
-                         mapPanel.stringButtonPress=openFile(fileName,mapPanel.currentFloor);
+                         AlertDialog.Builder adb = new AlertDialog.Builder(context);
+                         adb.setNegativeButton("Нет", new DialogInterface.OnClickListener() {
+                             @Override
+                             public void onClick(DialogInterface dialogInterface, int i) {
+                                 dialogInterface.dismiss();
+                             }
+                         });
+                         adb.setPositiveButton("Да", new DialogInterface.OnClickListener() {
+                             @Override
+                             public void onClick(DialogInterface dialogInterface, int i) {
+                                 mapPanel.stringButtonPress=openFile(fileName,mapPanel.currentFloor);
+                                 dialogInterface.dismiss();
+                             }
+                         });
+                         adb.setMessage("Вы уверены, что хотите загрузить?");
+                         adb.create().show();
                      }
                  }
                 );
@@ -388,7 +417,6 @@ public class MainActivity extends Activity
         ad.setPositiveButton("Принять", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
-                // Здесь впиши, что хочешь на OK
                 // Это строка, из которой нужен текст
                 EditText ET = layout.findViewById(R.id.coord);
                 String Row = ET.getText().toString();
@@ -428,6 +456,7 @@ public class MainActivity extends Activity
        if(!(mapPanel.MapWallPoints.containsKey(objectId)))
            return;
         AlertDialog.Builder adb = new AlertDialog.Builder(this);
+
         // Разметка всплывающего окна
        final int id=objectId;
         final View layout = LayoutInflater.from(this).inflate(R.layout.point_layout, null);
@@ -544,6 +573,7 @@ public class MainActivity extends Activity
         // Создать и показать окно
         ad = adb.create();
         ad.show();
+        ad.getWindow().setLayout(s*8,-2);
     }
 
     public class MyCustomAdapter extends ArrayAdapter<String> {
