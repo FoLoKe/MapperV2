@@ -111,7 +111,7 @@ public class MainActivity extends Activity
                      @Override
                      public void onClick(View v)
                      {
-
+                        if (mapPanel.scaleFactor<mapPanel.maxScale)
                          mapPanel.scaleFactor+=0.25;
                      }
                  }
@@ -124,7 +124,7 @@ public class MainActivity extends Activity
                      @Override
                      public void onClick(View v)
                      {
-
+                          if (mapPanel.scaleFactor>0.5)
                          mapPanel.scaleFactor-=0.25;
                      }
                  }

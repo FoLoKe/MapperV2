@@ -21,6 +21,7 @@ public class MapPanel extends SurfaceView implements SurfaceHolder.Callback
     private float x;
     private float y;
     protected float scaleFactor=1;
+    protected float maxScale=3;
     float canvasW=1,canvasH=1;
     private MainThread mainThread;
     private MapText textFPS;
