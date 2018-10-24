@@ -153,7 +153,7 @@ public class MainActivity extends Activity
                      @Override
                      public void onClick(View v)
                      {
-                          if (mapPanel.scaleFactor>0.5)
+                          if (mapPanel.scaleFactor>0.25)
                          mapPanel.scaleFactor-=0.25;
                      }
                  }
@@ -296,10 +296,10 @@ public class MainActivity extends Activity
 
                                 if (templine==null)
                                     return "error unexpected end of file"+templine;
-                                if (mapPanel.MapWallPoints.containsKey(Integer.valueOf(templine))) {
-                                    tempMapWallPoints.put(Integer.valueOf(templine), mapPanel.MapWallPoints.get(Integer.valueOf(templine)));
+                                try{Integer.parseInt(templine);
+                                    tempMapWallPoints.put(Integer.valueOf(templine), null);
                                 }
-                                else
+                                catch( NumberFormatException e)
                                     {
                                     return "error no point";
                                     }
@@ -307,6 +307,20 @@ public class MainActivity extends Activity
                             mapPanel.addMapWallPoint(index,x,y,tempMapWallPoints);
                             //mapPanel.addMapWallPoint(index,new MapWallPoint(Color.rgb(0,255,0),x,y,0,50,50,mapPanel.MapWallPoints.size(),tempMapWallPoints));
                           ///  tempMapWallPoints.clear();
+                        }
+                        for(Map.Entry<Integer,MapWallPoint> point: mapPanel.MapWallPoints.entrySet())
+                        {
+                           for(Map.Entry<Integer,MapWallPoint> wall :point.getValue().walls.entrySet())
+                           {
+                               if(mapPanel.MapWallPoints.containsKey(wall.getKey()))
+                               {
+                                   wall.setValue(mapPanel.MapWallPoints.get(wall.getKey()));
+                               }
+                               else
+                               {
+
+                               }
+                           }
                         }
                     }
                     inputStream.close();
