@@ -196,7 +196,11 @@ public class MainActivity extends Activity
         zoom_down_move.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View view) {
-               // mapPanel.scaleFactor+=0.25;
+                if(mapPanel.currentFloor>0) {
+                    mapPanel.MapWallPoints.clear();
+                    mapPanel.currentFloor -= 1;
+
+                }
             }
         });
 
@@ -205,7 +209,11 @@ public class MainActivity extends Activity
         zoom_up_move.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View view) {
-               // mapPanel.scaleFactor-=0.25;
+                if(mapPanel.currentFloor<6) {
+                    mapPanel.MapWallPoints.clear();
+
+                    mapPanel.currentFloor += 1;
+                }
             }
         });
         // Установка размеров кнопок

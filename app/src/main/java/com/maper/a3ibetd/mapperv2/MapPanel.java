@@ -29,6 +29,7 @@ public class MapPanel extends SurfaceView implements SurfaceHolder.Callback
     private MapText textMemUsage;
     private MapText textButtonPress;
     private MapText textButtonPress2;
+    private MapText textFoor;
 
     private boolean checkMemory=false;
 
@@ -40,6 +41,7 @@ public class MapPanel extends SurfaceView implements SurfaceHolder.Callback
     public String stringMemUsage="Mem unknown";
     public String stringButtonPress="Button unknown";
     public String stringButtonPress2="Button unknown";
+    public String stringFloor="stringFloor";
 
     private boolean gameStart=false;
     private PointF windowSize;
@@ -84,6 +86,7 @@ public class MapPanel extends SurfaceView implements SurfaceHolder.Callback
         textFPS=new MapText(Color.rgb(0,255,0),200,150);
         textButtonPress=new MapText(Color.rgb(0,255,0),200,300);
         textButtonPress2=new MapText(Color.rgb(0,255,0),200,350);
+       textFoor=new MapText(Color.rgb(0,255,0),200,400);
         pointOfTouch=new PointF();
         stringButtonPress="just started and nothing";
         memInfo = new Debug.MemoryInfo();
@@ -145,7 +148,7 @@ public class MapPanel extends SurfaceView implements SurfaceHolder.Callback
         textMemUsage.update(stringMemUsage);
         textButtonPress.update(mapCamera.getWorldLocation()+"");
         textButtonPress2.update(pointOfTouch+"");
-
+        textFoor.update(currentFloor+"");
         testRectangle.setWorldLocation(new PointF(pointOfTouch.x,pointOfTouch.y));
 
         mapCamera.tick(scaleFactor,mapCamera.getWorldLocation().x+screenOffset.x,mapCamera.getWorldLocation().y+screenOffset.y);
@@ -191,6 +194,8 @@ public class MapPanel extends SurfaceView implements SurfaceHolder.Callback
         textFPS.draw(canvas);
         textButtonPress.draw(canvas);
         textButtonPress2.draw(canvas);
+        textFoor.draw(canvas);
+
         Paint paint=new Paint();
         paint.setColor(Color.GREEN);
 
