@@ -219,7 +219,10 @@ public class MainActivity extends Activity
         zoom_down_move.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View view) {
-               // mapPanel.scaleFactor+=0.25;
+                if(mapPanel.currentFloor>0) {
+                    mapPanel.MapWallPoints.clear();
+                    mapPanel.currentFloor -= 1;
+                }
             }
         });
 
@@ -228,7 +231,10 @@ public class MainActivity extends Activity
         zoom_up_move.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View view) {
-               // mapPanel.scaleFactor-=0.25;
+                if(mapPanel.currentFloor<6) {
+                    mapPanel.MapWallPoints.clear();
+                    mapPanel.currentFloor += 1;
+                }
             }
         });
         // Установка размеров кнопок
@@ -382,36 +388,35 @@ public class MainActivity extends Activity
     }
 
     public void writeFile(final DriveFolder driveid) {
+
         String root = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOCUMENTS).toString();
         File myDir = new File(root + "/CustomMapper");
         if (!myDir.exists()) {
             return;
         }
+        for(int i=1;i<10;i++) {
+            String fname = "Walls" + fileName + "Floor" + i + ".txt";
+            File file = new File(myDir, fname);
+            if (!file.exists())
+                return;
 
-        String fname = "Walls"+fileName+"Floor"+1+".txt";
-        File file = new File (myDir, fname);
-        if (!file.exists ())
-        return;
-
-        final Task<DriveFolder> rootFolderTask = mDriveResourceClient.getRootFolder();
-        final Task<DriveContents> createContentsTask = mDriveResourceClient.createContents();
-        Tasks.whenAll(rootFolderTask, createContentsTask).continueWithTask(task -> {
-            DriveFolder parent = driveid;
-            DriveContents contents = createContentsTask.getResult();
-            OutputStream outputStream = contents.getOutputStream();
-
-
-
-            try (Writer writer = new OutputStreamWriter(outputStream)) {
+            final Task<DriveFolder> rootFolderTask = mDriveResourceClient.getRootFolder();
+            final Task<DriveContents> createContentsTask = mDriveResourceClient.createContents();
+            Tasks.whenAll(rootFolderTask, createContentsTask).continueWithTask(task -> {
+                DriveFolder parent = driveid;
+                DriveContents contents = createContentsTask.getResult();
+                OutputStream outputStream = contents.getOutputStream();
 
 
-                //InputStream inputStream = openFileInput(fileName);
-                FileInputStream inputStream = new FileInputStream(file);
+                try (Writer writer = new OutputStreamWriter(outputStream)) {
+
+
+                    //InputStream inputStream = openFileInput(fileName);
+                    FileInputStream inputStream = new FileInputStream(file);
                     InputStreamReader isr = new InputStreamReader(inputStream);
                     BufferedReader reader = new BufferedReader(isr);
                     String templine;
-                    while((templine=reader.readLine())!=null)
-                    {
+                    while ((templine = reader.readLine()) != null) {
                         writer.write(templine);
                         writer.write("\n");
 
@@ -420,26 +425,27 @@ public class MainActivity extends Activity
                     reader.close();
                     isr.close();
 
-            } catch (Throwable e){}
+                } catch (Throwable e) {
+                }
 
 
+                MetadataChangeSet changeSet = new MetadataChangeSet.Builder()
+                        .setTitle(file.getName())
+                        .setMimeType("text/plain")
+                        .setStarred(true)
+                        .build();
 
-            MetadataChangeSet changeSet = new MetadataChangeSet.Builder()
-                    .setTitle(file.getName())
-                    .setMimeType("text/plain")
-                    .setStarred(true)
-                    .build();
+                return mDriveResourceClient.createFile(parent, changeSet, contents);
+            })
+                    .addOnSuccessListener(this,
+                            driveFile -> {
 
-            return mDriveResourceClient.createFile(parent, changeSet, contents);
-        })
-                .addOnSuccessListener(this,
-                        driveFile -> {
+                            })
+                    .addOnFailureListener(this, e -> {
+                        Log.e(TAG, "Unable to create file", e);
 
-                        })
-                .addOnFailureListener(this, e -> {
-                    Log.e(TAG, "Unable to create file", e);
-
-                });
+                    });
+        }
     }
 
 
