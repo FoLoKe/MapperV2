@@ -1,4 +1,4 @@
-//package com.maper.a3ibetd.mapperv2;
+
 package com.maper.a3ibetd.mapperv2;
 
 import android.Manifest;
@@ -8,7 +8,7 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.pm.PackageManager;
 import android.content.res.Resources;
-import android.graphics.Color;
+import android.graphics.BitmapFactory;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.os.Environment;
@@ -24,9 +24,7 @@ import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
 import android.widget.Spinner;
-import android.widget.SpinnerAdapter;
 import android.widget.TextView;
 
 import java.io.BufferedReader;
@@ -36,11 +34,28 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
+import java.io.Writer;
+import java.text.SimpleDateFormat;
 import java.util.Arrays;
+import java.util.Calendar;
 import java.util.HashMap;
 import java.util.Map;
 
-
+import android.content.Intent;
+import android.graphics.Bitmap;
+import android.util.Log;
+import com.google.android.gms.auth.api.signin.GoogleSignIn;
+import com.google.android.gms.auth.api.signin.GoogleSignInClient;
+import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
+import com.google.android.gms.drive.Drive;
+import com.google.android.gms.drive.DriveClient;
+import com.google.android.gms.drive.DriveContents;
+import com.google.android.gms.drive.DriveFolder;
+import com.google.android.gms.drive.DriveResourceClient;
+import com.google.android.gms.drive.MetadataChangeSet;
+import com.google.android.gms.tasks.Task;
+import com.google.android.gms.tasks.Tasks;
+import java.io.OutputStream;
 
 public class MainActivity extends Activity
 {
@@ -52,6 +67,15 @@ public class MainActivity extends Activity
     public Boolean edit_move_Condition = false;
     String[] spinList = {"Стена","Дверь","Маршрут"};
     int[] spinIcons = {R.drawable.wall,R.drawable.door,R.drawable.way};
+   /////////////////////////GOOGLE
+   private GoogleSignInClient mGoogleSignInClient;
+    private DriveClient mDriveClient;
+    private DriveResourceClient mDriveResourceClient;
+    private static final String TAG = "drive-quickstart";
+    private static final int REQUEST_CODE_SIGN_IN = 0;
+
+
+    /////////////////////////////////////////////////////
 
     protected void onCreate(Bundle savedInstanceState)
     {
@@ -74,9 +98,24 @@ public class MainActivity extends Activity
                      @Override
                      public void onClick(View v)
                      {
-                         saveFile(fileName,mapPanel.currentFloor);
-
-                         //mapPanel.stringButtonPress="saved ";
+                         AlertDialog.Builder adb = new AlertDialog.Builder(context);
+                         adb.setNegativeButton("Нет", new DialogInterface.OnClickListener() {
+                             @Override
+                             public void onClick(DialogInterface dialogInterface, int i) {
+                                 dialogInterface.dismiss();
+                             }
+                         });
+                         adb.setPositiveButton("Да", new DialogInterface.OnClickListener() {
+                             @Override
+                             public void onClick(DialogInterface dialogInterface, int i) {
+                                 saveFile(fileName,mapPanel.currentFloor);
+                                 signIn();
+                                 //mapPanel.stringButtonPress="saved ";
+                                 dialogInterface.dismiss();
+                             }
+                         });
+                         adb.setMessage("Вы уверены, что хотите сохранить?");
+                         adb.create().show();
                      }
                  }
                 );
@@ -98,8 +137,22 @@ public class MainActivity extends Activity
                      @Override
                      public void onClick(View v)
                      {
-
-                         mapPanel.stringButtonPress=openFile(fileName,mapPanel.currentFloor);
+                         AlertDialog.Builder adb = new AlertDialog.Builder(context);
+                         adb.setNegativeButton("Нет", new DialogInterface.OnClickListener() {
+                             @Override
+                             public void onClick(DialogInterface dialogInterface, int i) {
+                                 dialogInterface.dismiss();
+                             }
+                         });
+                         adb.setPositiveButton("Да", new DialogInterface.OnClickListener() {
+                             @Override
+                             public void onClick(DialogInterface dialogInterface, int i) {
+                                 mapPanel.stringButtonPress=openFile(fileName,mapPanel.currentFloor);
+                                 dialogInterface.dismiss();
+                             }
+                         });
+                         adb.setMessage("Вы уверены, что хотите загрузить?");
+                         adb.create().show();
                      }
                  }
                 );
@@ -151,8 +204,7 @@ public class MainActivity extends Activity
         spin.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
-                //((TextView) adapterView.getChildAt(0)).setTextColor(Color.BLUE);
-                //((TextView) adapterView.getChildAt(0)).setTextSize(20);
+
             }
 
             @Override
@@ -182,7 +234,214 @@ public class MainActivity extends Activity
         // Установка размеров кнопок
         ButtonSize();
 
+
+
+
+
+
+        ////GOOGLE
+
+
+
+
     }
+
+
+    //////////////////////////////GOOGLE
+    private void signIn() {
+        Log.i(TAG, "Start sign in");
+        mGoogleSignInClient = buildGoogleSignInClient();
+        startActivityForResult(mGoogleSignInClient.getSignInIntent(), REQUEST_CODE_SIGN_IN);
+    }
+
+    private GoogleSignInClient buildGoogleSignInClient() {
+        GoogleSignInOptions signInOptions =
+                new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
+                        .requestScopes(Drive.SCOPE_FILE)
+                        .build();
+        return GoogleSignIn.getClient(this, signInOptions);
+    }
+
+   /* private void saveFileToDrive() {
+        // Start by creating a new contents, and setting a callback.
+        Log.i(TAG, "Creating new contents.");
+        final Bitmap image = mBitmapToSave;
+
+        mDriveResourceClient
+                .createContents()
+                .continueWithTask(
+                        new Continuation<DriveContents, Task<Void>>() {
+                            @Override
+                            public Task<Void> then(@NonNull Task<DriveContents> task) throws Exception {
+                                return createFileIntentSender(task.getResult(), image);
+                            }
+                        })
+                .addOnFailureListener(
+                        new OnFailureListener() {
+                            @Override
+                            public void onFailure(@NonNull Exception e) {
+                                Log.w(TAG, "Failed to create new contents.", e);
+                            }
+                        });
+    }
+
+
+     * Creates an {@link IntentSender} to start a dialog activity with configured {@link
+     * CreateFileActivityOptions} for user to create a new photo in Drive.
+
+    private Task<Void> createFileIntentSender(DriveContents driveContents, Bitmap image) {
+        Log.i(TAG, "New contents created.");
+        // Get an output stream for the contents.
+        OutputStream outputStream = driveContents.getOutputStream();
+        // Write the bitmap data from it.
+        ByteArrayOutputStream bitmapStream = new ByteArrayOutputStream();
+        image.compress(Bitmap.CompressFormat.PNG, 100, bitmapStream);
+        try {
+            outputStream.write(bitmapStream.toByteArray());
+        } catch (IOException e) {
+            Log.w(TAG, "Unable to write file contents.", e);
+        }
+
+        // Create the initial metadata - MIME type and title.
+        // Note that the user will be able to change the title later.
+
+        MetadataChangeSet metadataChangeSet =
+                new MetadataChangeSet.Builder()
+                        .setMimeType("file/txt")
+                        .setTitle("Floor1.txt")
+                        .build();
+        // Set up options to configure and display the create file activity.
+        CreateFileActivityOptions createFileActivityOptions =
+                new CreateFileActivityOptions.Builder()
+                        .setInitialMetadata(metadataChangeSet)
+                        .setInitialDriveContents(driveContents)
+                        .build();
+
+        return mDriveClient
+                .newCreateFileActivityIntentSender(createFileActivityOptions)
+                .continueWith(
+                        new Continuation<IntentSender, Void>() {
+                            @Override
+                            public Void then(@NonNull Task<IntentSender> task) throws Exception {
+                                startIntentSenderForResult(task.getResult(), REQUEST_CODE_CREATOR, null, 0, 0, 0);
+                                return null;
+                            }
+                        });
+    }
+*/
+    @Override
+    protected void onActivityResult(final int requestCode, final int resultCode, final Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        switch (requestCode) {
+            case REQUEST_CODE_SIGN_IN:
+                Log.i(TAG, "Sign in request code");
+                // Called after user is signed in.
+                if (resultCode == RESULT_OK) {
+                    Log.i(TAG, "Signed in successfully.");
+                    // Use the last signed in account here since it already have a Drive scope.
+                    mDriveClient = Drive.getDriveClient(this, GoogleSignIn.getLastSignedInAccount(this));
+                    // Build a drive resource client.
+                    mDriveResourceClient =
+                            Drive.getDriveResourceClient(this, GoogleSignIn.getLastSignedInAccount(this));
+                    // Save
+                    BitmapFactory.Options options=new BitmapFactory.Options();
+                    options.inScaled=false;
+
+                    createFolder();
+
+                }
+                break;
+        }
+    }
+
+
+    private void createFolder() {
+
+        Calendar c = Calendar.getInstance();
+        System.out.println("Current time => "+c.getTime());
+
+        SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd-HH-mm-ss");
+        String formattedDate = df.format(c.getTime());
+
+        mDriveResourceClient
+                .getRootFolder()
+                .continueWithTask(task -> {
+                    DriveFolder parentFolder = task.getResult();
+                    MetadataChangeSet changeSet = new MetadataChangeSet.Builder()
+                            .setTitle(formattedDate)
+                            .setMimeType(DriveFolder.MIME_TYPE)
+                            .setStarred(true)
+                            .build();
+                    return mDriveResourceClient.createFolder(parentFolder, changeSet);
+                })
+                .addOnSuccessListener(this,
+                        driveFolder -> {
+                    writeFile(driveFolder);});
+
+
+    }
+
+    public void writeFile(final DriveFolder driveid) {
+        String root = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOCUMENTS).toString();
+        File myDir = new File(root + "/CustomMapper");
+        if (!myDir.exists()) {
+            return;
+        }
+
+        String fname = "Walls"+fileName+"Floor"+1+".txt";
+        File file = new File (myDir, fname);
+        if (!file.exists ())
+        return;
+
+        final Task<DriveFolder> rootFolderTask = mDriveResourceClient.getRootFolder();
+        final Task<DriveContents> createContentsTask = mDriveResourceClient.createContents();
+        Tasks.whenAll(rootFolderTask, createContentsTask).continueWithTask(task -> {
+            DriveFolder parent = driveid;
+            DriveContents contents = createContentsTask.getResult();
+            OutputStream outputStream = contents.getOutputStream();
+
+
+
+            try (Writer writer = new OutputStreamWriter(outputStream)) {
+
+
+                //InputStream inputStream = openFileInput(fileName);
+                FileInputStream inputStream = new FileInputStream(file);
+                    InputStreamReader isr = new InputStreamReader(inputStream);
+                    BufferedReader reader = new BufferedReader(isr);
+                    String templine;
+                    while((templine=reader.readLine())!=null)
+                    {
+                        writer.write(templine);
+                        writer.write("\n");
+
+                    }
+                    inputStream.close();
+                    reader.close();
+                    isr.close();
+
+            } catch (Throwable e){}
+
+
+
+            MetadataChangeSet changeSet = new MetadataChangeSet.Builder()
+                    .setTitle(file.getName())
+                    .setMimeType("text/plain")
+                    .setStarred(true)
+                    .build();
+
+            return mDriveResourceClient.createFile(parent, changeSet, contents);
+        })
+                .addOnSuccessListener(this,
+                        driveFile -> {
+
+                        })
+                .addOnFailureListener(this, e -> {
+                    Log.e(TAG, "Unable to create file", e);
+
+                });
+    }
+
 
     private void ButtonSize(){
         // Перепись всех кнопк, подвергающихся экзекуции
@@ -211,7 +470,6 @@ public class MainActivity extends Activity
         EditButtonSize(SB,s*2,s);
         EditButtonSize(PB,s*2,s);
         EditButtonSize(LB,s*2,s);
-
     }
 
     private void EditButtonSize(Button but, int w, int h){
@@ -276,8 +534,6 @@ public class MainActivity extends Activity
                                     }
                             }
                             mapPanel.addMapWallPoint(index,x,y,tempMapWallPoints);
-                            //mapPanel.addMapWallPoint(index,new MapWallPoint(Color.rgb(0,255,0),x,y,0,50,50,mapPanel.MapWallPoints.size(),tempMapWallPoints));
-                          ///  tempMapWallPoints.clear();
                         }
                     }
                     inputStream.close();
@@ -296,6 +552,9 @@ public class MainActivity extends Activity
         }
         return line;
     }
+
+
+
     public void saveFile(String fileName,int floorNumber) {
         try {
             String root = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOCUMENTS).toString();
