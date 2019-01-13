@@ -27,6 +27,7 @@
 			android:gravity="center"
 			android:orientation="horizontal">
 
+			
 
 			<Button
 				android:id="@+id/coordButton"
