@@ -10,6 +10,7 @@ import android.content.pm.PackageManager;
 import android.content.res.Resources;
 import android.graphics.BitmapFactory;
 import android.graphics.drawable.Drawable;
+import android.media.MediaPlayer;
 import android.os.Bundle;
 import android.os.Environment;
 import android.support.v4.app.ActivityCompat;
@@ -24,6 +25,7 @@ import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.ScrollView;
 import android.widget.Spinner;
 import android.widget.TextView;
 
@@ -42,8 +44,9 @@ import java.util.HashMap;
 import java.util.Map;
 
 import android.content.Intent;
-import android.graphics.Bitmap;
 import android.util.Log;
+import android.widget.ViewFlipper;
+
 import com.google.android.gms.auth.api.signin.GoogleSignIn;
 import com.google.android.gms.auth.api.signin.GoogleSignInClient;
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
@@ -55,6 +58,8 @@ import com.google.android.gms.drive.DriveResourceClient;
 import com.google.android.gms.drive.MetadataChangeSet;
 import com.google.android.gms.tasks.Task;
 import com.google.android.gms.tasks.Tasks;
+import com.maper.a3ibetd.mapperv2.Objects.MapWallPoint;
+
 import java.io.OutputStream;
 
 public class MainActivity extends Activity
@@ -240,16 +245,62 @@ public class MainActivity extends Activity
         // Установка размеров кнопок
         ButtonSize();
 
+        //to menu
+        Button menuButton = findViewById(R.id.toMenu);
+        // Устанавливаем действие по нажатию
+        final MediaPlayer mPlayer = MediaPlayer.create(MainActivity.this, R.raw.dank);
+
+        menuButton.setOnClickListener(new OnClickListener() {
+        @Override
+        public void onClick(View view) {
+            ((ViewFlipper)findViewById(R.id.mainFlipper)).setDisplayedChild(1);
+        }
+    });
+        Button redactorButton = findViewById(R.id.toRedactor);
+        redactorButton.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                ((ViewFlipper)findViewById(R.id.mainFlipper)).setDisplayedChild(0);
+            }
+        });
+        Button creatorsButton = findViewById(R.id.toCreators);
+
+        final ScrollView sv=findViewById(R.id.scrollInCreators);
+        creatorsButton.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                mPlayer.start();
+                long timeElapsed = 0;
+                long startTime = System.nanoTime();
+                while (timeElapsed < 11)
+                    timeElapsed = (System.nanoTime() - startTime) / 1000000000;
+                ((ViewFlipper) findViewById(R.id.mainFlipper)).setDisplayedChild(2);
 
 
 
 
-
-        ////GOOGLE
-
-
+            }
+        });
 
 
+        ImageView testButton = findViewById(R.id.debugFoloke);
+
+
+        testButton.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View view) {
+
+            }
+        });
+
+        Button fromCreatorsButton = findViewById(R.id.fromCreators);
+        fromCreatorsButton.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                mPlayer.pause();
+                ((ViewFlipper)findViewById(R.id.mainFlipper)).setDisplayedChild(1);
+            }
+        });
     }
 
 
@@ -268,73 +319,6 @@ public class MainActivity extends Activity
         return GoogleSignIn.getClient(this, signInOptions);
     }
 
-   /* private void saveFileToDrive() {
-        // Start by creating a new contents, and setting a callback.
-        Log.i(TAG, "Creating new contents.");
-        final Bitmap image = mBitmapToSave;
-
-        mDriveResourceClient
-                .createContents()
-                .continueWithTask(
-                        new Continuation<DriveContents, Task<Void>>() {
-                            @Override
-                            public Task<Void> then(@NonNull Task<DriveContents> task) throws Exception {
-                                return createFileIntentSender(task.getResult(), image);
-                            }
-                        })
-                .addOnFailureListener(
-                        new OnFailureListener() {
-                            @Override
-                            public void onFailure(@NonNull Exception e) {
-                                Log.w(TAG, "Failed to create new contents.", e);
-                            }
-                        });
-    }
-
-
-     * Creates an {@link IntentSender} to start a dialog activity with configured {@link
-     * CreateFileActivityOptions} for user to create a new photo in Drive.
-
-    private Task<Void> createFileIntentSender(DriveContents driveContents, Bitmap image) {
-        Log.i(TAG, "New contents created.");
-        // Get an output stream for the contents.
-        OutputStream outputStream = driveContents.getOutputStream();
-        // Write the bitmap data from it.
-        ByteArrayOutputStream bitmapStream = new ByteArrayOutputStream();
-        image.compress(Bitmap.CompressFormat.PNG, 100, bitmapStream);
-        try {
-            outputStream.write(bitmapStream.toByteArray());
-        } catch (IOException e) {
-            Log.w(TAG, "Unable to write file contents.", e);
-        }
-
-        // Create the initial metadata - MIME type and title.
-        // Note that the user will be able to change the title later.
-
-        MetadataChangeSet metadataChangeSet =
-                new MetadataChangeSet.Builder()
-                        .setMimeType("file/txt")
-                        .setTitle("Floor1.txt")
-                        .build();
-        // Set up options to configure and display the create file activity.
-        CreateFileActivityOptions createFileActivityOptions =
-                new CreateFileActivityOptions.Builder()
-                        .setInitialMetadata(metadataChangeSet)
-                        .setInitialDriveContents(driveContents)
-                        .build();
-
-        return mDriveClient
-                .newCreateFileActivityIntentSender(createFileActivityOptions)
-                .continueWith(
-                        new Continuation<IntentSender, Void>() {
-                            @Override
-                            public Void then(@NonNull Task<IntentSender> task) throws Exception {
-                                startIntentSenderForResult(task.getResult(), REQUEST_CODE_CREATOR, null, 0, 0, 0);
-                                return null;
-                            }
-                        });
-    }
-*/
     @Override
     protected void onActivityResult(final int requestCode, final int resultCode, final Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
@@ -834,5 +818,11 @@ public class MainActivity extends Activity
             icon.setImageResource(spinIcons[position]);
             return row;
         }
+    }
+
+    public void scroll()
+    {
+
+
     }
 }

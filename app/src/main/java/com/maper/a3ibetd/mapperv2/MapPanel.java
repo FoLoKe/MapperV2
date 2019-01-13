@@ -9,7 +9,11 @@ import android.graphics.*;
 import android.os.*;
 import java.util.*;
 import android.util.*;
-import android.view.View;
+
+import com.maper.a3ibetd.mapperv2.Objects.MapText;
+import com.maper.a3ibetd.mapperv2.Objects.MapWallPoint;
+import com.maper.a3ibetd.mapperv2.Objects.MyPoint;
+import com.maper.a3ibetd.mapperv2.Objects.Tile;
 
 import static java.lang.Math.round;
 

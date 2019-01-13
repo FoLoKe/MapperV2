@@ -1,6 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
-	xmlns:app="http://schemas.android.com/apk/res-auto"
+<ViewFlipper android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/mainFlipper">
+<FrameLayout
+    android:id="@+id/Redactor"
 	android:layout_width="match_parent"
 	android:layout_height="match_parent"
 	android:gravity="center">
@@ -23,12 +27,6 @@
 			android:gravity="center"
 			android:orientation="horizontal">
 
-			<Button
-				android:id="@+id/saveButton"
-				android:layout_width="@dimen/button_double_size"
-				android:layout_height="@dimen/button_size"
-				android:layout_margin="@dimen/button_margin"
-                android:background="@drawable/save" />
 
 			<Button
 				android:id="@+id/coordButton"
@@ -36,13 +34,15 @@
 				android:layout_height="@dimen/button_size"
 				android:layout_margin="@dimen/button_margin"
 				android:background="@drawable/place" />
+            <Button
+                android:id="@+id/toMenu"
+                android:text="Menu"
+                android:layout_width="@dimen/button_double_size"
+                android:layout_height="@dimen/button_size"
+                android:layout_margin="@dimen/button_margin"
+               />
 
-			<Button
-				android:id="@+id/loadButton"
-				android:layout_width="@dimen/button_double_size"
-				android:layout_height="@dimen/button_size"
-				android:layout_margin="@dimen/button_margin"
-				android:background="@drawable/load" />
+
 		</LinearLayout>
 	</HorizontalScrollView>
 
@@ -108,3 +108,170 @@
 		android:spinnerMode="dropdown" />
 
 </FrameLayout>
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:id="@+id/Menu">
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:gravity="center"
+            android:orientation="vertical">
+            <Button
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="back to redactor"
+                android:id="@+id/toRedactor"
+                />
+            <Button
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Save to GoogleDrive"
+                android:id="@+id/saveToGoogle"
+                />
+
+            <Button
+                android:id="@+id/saveButton"
+                android:layout_width="@dimen/button_double_size"
+                android:layout_height="@dimen/button_size"
+                android:layout_margin="@dimen/button_margin"
+                android:background="@drawable/save" />
+            <Button
+                android:id="@+id/loadButton"
+                android:layout_width="@dimen/button_double_size"
+                android:layout_height="@dimen/button_size"
+                android:layout_margin="@dimen/button_margin"
+                android:background="@drawable/load" />
+            <Button
+                android:id="@+id/toCreators"
+                android:layout_width="wrap_content"
+                android:layout_height="@dimen/button_size"
+                android:layout_margin="@dimen/button_margin"
+                android:text="создатели" />
+        </LinearLayout>
+    </FrameLayout>
+
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:id="@+id/Creators"
+        android:background="#000000">
+        <HorizontalScrollView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+        <ScrollView
+            android:id="@+id/scrollInCreators"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical"
+            >
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:gravity="center"
+            android:orientation="vertical">
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="О разработчиках:"
+                android:textSize="50dp"
+
+                android:textColor="#ffffff"/>
+                 <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:gravity="center"
+                    android:orientation="horizontal">
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:gravity="center"
+                            android:orientation="vertical">
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="FoLoKe"
+                                android:textSize="50dp"
+                                android:layout_margin="5dp"
+                                android:textColor="#ffffff"/>
+                            <ImageView
+                                android:layout_width="225dp"
+                                android:layout_height="275dp"
+                                android:background="@drawable/foloke"
+                                android:id="@+id/debugFoloke"
+                                android:layout_margin="20dp"/>
+                        </LinearLayout>
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:gravity="center"
+                            android:orientation="vertical">
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="A-Sey"
+                                android:layout_margin="5dp"
+                                android:textSize="50dp"
+                                android:textColor="#ffffff"/>
+                            <ImageView
+                                android:layout_width="225dp"
+                                android:layout_height="275dp"
+                                android:background="@drawable/asey"
+                                android:layout_margin="20dp"/>
+                        </LinearLayout>
+                </LinearLayout>
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:gravity="center"
+                    android:orientation="horizontal">
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:gravity="center"
+                            android:orientation="vertical">
+                                <TextView
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:text="maglew"
+                                    android:textSize="50dp"
+                                    android:layout_margin="5dp"
+                                    android:textColor="#ffffff"/>
+                                <ImageView
+                                    android:layout_width="225dp"
+                                    android:layout_height="275dp"
+                                    android:background="@drawable/maglew"
+                                    android:layout_margin="20dp"/>
+                        </LinearLayout>
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:gravity="center"
+                            android:orientation="vertical">
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="s.lesley"
+                                android:textSize="50dp"
+                                android:layout_margin="5dp"
+                                android:textColor="#ffffff"/>
+                            <ImageView
+                                android:layout_width="225dp"
+                                android:layout_height="275dp"
+                                android:background="@drawable/olse"
+                                android:layout_margin="20dp"/>
+                        </LinearLayout>
+                    </LinearLayout>
+            <Button
+                android:id="@+id/fromCreators"
+                android:layout_width="@dimen/button_double_size"
+                android:layout_height="@dimen/button_size"
+                android:layout_margin="@dimen/button_margin"
+                android:text="back 7o m3nu"
+                />
+        </LinearLayout>
+        </ScrollView>
+        </HorizontalScrollView>
+    </FrameLayout>
+
+</ViewFlipper>
