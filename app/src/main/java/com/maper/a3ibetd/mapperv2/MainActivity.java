@@ -72,6 +72,8 @@ public class MainActivity extends Activity
     public Boolean edit_move_Condition = false;
     String[] spinList = {"Стена","Дверь","Маршрут"};
     int[] spinIcons = {R.drawable.wall,R.drawable.door,R.drawable.way};
+    int MIN_FLOOR = 0;
+    int MAX_FLOOR = 10;
    /////////////////////////GOOGLE
    private GoogleSignInClient mGoogleSignInClient;
     private DriveClient mDriveClient;
@@ -80,42 +82,42 @@ public class MainActivity extends Activity
     private static final int REQUEST_CODE_SIGN_IN = 0;
 
 
-    /////////////////////////////////////////////////////
-
     protected void onCreate(Bundle savedInstanceState)
     {
         super.onCreate(savedInstanceState);
-        //requestWindowFeature(Window.FEATURE_NO_TITLE);
         getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
                 WindowManager.LayoutParams.FLAG_FULLSCREEN);
         setContentView(R.layout.main);
-
         context = this;
-        Button saveButton =findViewById(R.id.saveButton);
         mapPanel=findViewById(R.id.canvasPanel);
 
+        // Проверка доступа к памяти
         if (ActivityCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE) == PackageManager.PERMISSION_DENIED)
             ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, 10001);
 
+        // Кнопка сохранения
+        Button saveButton =findViewById(R.id.saveButton);
+        // Назначение действия
         saveButton.setOnClickListener
                 (new OnClickListener()
                  {
                      @Override
                      public void onClick(View v)
                      {
+                         // Диалоговое окно подтверждения
                          AlertDialog.Builder adb = new AlertDialog.Builder(context);
                          adb.setNegativeButton("Нет", new DialogInterface.OnClickListener() {
                              @Override
                              public void onClick(DialogInterface dialogInterface, int i) {
+                                 // Если "Нет", то просто закрываем
                                  dialogInterface.dismiss();
                              }
                          });
                          adb.setPositiveButton("Да", new DialogInterface.OnClickListener() {
                              @Override
                              public void onClick(DialogInterface dialogInterface, int i) {
+                                 // Если "Да", то сохраняем
                                  saveFile(fileName,mapPanel.currentFloor);
-                                 signIn();
-                                 //mapPanel.stringButtonPress="saved ";
                                  dialogInterface.dismiss();
                              }
                          });
@@ -124,6 +126,22 @@ public class MainActivity extends Activity
                      }
                  }
                 );
+
+        // Кнопка сохранения на Google Drive
+        Button gSaveButton = findViewById(R.id.saveToGoogle);
+        gSaveButton.setOnClickListener(
+                new OnClickListener()
+                {
+                    @Override
+                    public void onClick(View v)
+                    {
+                        // Вход в аккаунт
+                        signIn();
+                    }
+                }
+        );
+
+        // Кнопка добавления новой точки
         Button coordButton = findViewById(R.id.coordButton);
         coordButton.setOnClickListener
                 (new OnClickListener()
@@ -131,10 +149,13 @@ public class MainActivity extends Activity
                      @Override
                      public void onClick(View v)
                      {
+                         // Функция добавления точки
                          setCoordClick(v);
                      }
                  }
                 );
+
+        // Кнопка загрузки карты
         Button loadButton =findViewById(R.id.loadButton);
         loadButton.setOnClickListener
                 (new OnClickListener()
@@ -142,16 +163,19 @@ public class MainActivity extends Activity
                      @Override
                      public void onClick(View v)
                      {
+                         // Диалоговое окно подтверждения
                          AlertDialog.Builder adb = new AlertDialog.Builder(context);
                          adb.setNegativeButton("Нет", new DialogInterface.OnClickListener() {
                              @Override
                              public void onClick(DialogInterface dialogInterface, int i) {
+                                 // Если "Нет", то просто закрыть
                                  dialogInterface.dismiss();
                              }
                          });
                          adb.setPositiveButton("Да", new DialogInterface.OnClickListener() {
                              @Override
                              public void onClick(DialogInterface dialogInterface, int i) {
+                                 // Если "Да", то открыть файл
                                  mapPanel.stringButtonPress=openFile(fileName,mapPanel.currentFloor);
                                  dialogInterface.dismiss();
                              }
@@ -161,7 +185,7 @@ public class MainActivity extends Activity
                      }
                  }
                 );
-        //кнопка отдаление
+        // Кнопка отдаления
         Button zoomInButton =findViewById(R.id.plusButton);
         zoomInButton.setOnClickListener
                 (new OnClickListener()
@@ -174,7 +198,7 @@ public class MainActivity extends Activity
                      }
                  }
                 );
-        //кнопка приближения
+        // Кнопка приближения
         Button zoomOutButton =findViewById(R.id.minusButton);
         zoomOutButton.setOnClickListener
                 (new OnClickListener()
@@ -187,8 +211,8 @@ public class MainActivity extends Activity
                      }
                  }
                 );
-        // Кнопка редактирования/сдвига
 
+        // Кнопка редактирования/сдвига
         Button edit_move = findViewById(R.id.edit_move);
         // Устанавливаем действие по нажатию
         edit_move.setOnClickListener(new OnClickListener() {
@@ -197,15 +221,11 @@ public class MainActivity extends Activity
                 EMClick(view);
             }
         });
-        // Выпадающий список
 
+        // Выпадающий список
         Spinner spin = findViewById(R.id.spinner);
-        //ArrayAdapter<String> adapter = new ArrayAdapter<String>(this, R.layout.row, R.id.spin_text, spinList);
         MyCustomAdapter adapter = new MyCustomAdapter(this, R.layout.row, spinList);
         spin.setAdapter(adapter);
-
-
-
         spin.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
@@ -219,14 +239,17 @@ public class MainActivity extends Activity
         });
         spin.setVisibility(View.VISIBLE);
 
+        // Кнопка смены этажа вниз
         Button zoom_down_move = findViewById(R.id.downButton);
         // Устанавливаем действие по нажатию
         zoom_down_move.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View view) {
-                if(mapPanel.currentFloor>0) {
+                if(mapPanel.currentFloor>MIN_FLOOR) {
+                    saveFile(fileName+"_temp",mapPanel.currentFloor);
                     mapPanel.MapWallPoints.clear();
                     mapPanel.currentFloor -= 1;
+                    mapPanel.stringButtonPress=openFile(fileName+"_temp",mapPanel.currentFloor);
                 }
             }
         });
@@ -236,26 +259,30 @@ public class MainActivity extends Activity
         zoom_up_move.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View view) {
-                if(mapPanel.currentFloor<6) {
+                if(mapPanel.currentFloor<MAX_FLOOR) {
+                    saveFile(fileName+"_temp",mapPanel.currentFloor);
                     mapPanel.MapWallPoints.clear();
                     mapPanel.currentFloor += 1;
+                    mapPanel.stringButtonPress=openFile(fileName+"_temp",mapPanel.currentFloor);
                 }
             }
         });
         // Установка размеров кнопок
         ButtonSize();
 
-        //to menu
+        // Переход в меню
         Button menuButton = findViewById(R.id.toMenu);
-        // Устанавливаем действие по нажатию
+        // Привязываем аудиодорожку
         final MediaPlayer mPlayer = MediaPlayer.create(MainActivity.this, R.raw.dank);
 
+        // Устанавливаем действие по нажатию
         menuButton.setOnClickListener(new OnClickListener() {
         @Override
         public void onClick(View view) {
             ((ViewFlipper)findViewById(R.id.mainFlipper)).setDisplayedChild(1);
         }
     });
+        // Вернуться в режим редактирования
         Button redactorButton = findViewById(R.id.toRedactor);
         redactorButton.setOnClickListener(new OnClickListener() {
             @Override
@@ -263,8 +290,9 @@ public class MainActivity extends Activity
                 ((ViewFlipper)findViewById(R.id.mainFlipper)).setDisplayedChild(0);
             }
         });
+        // Показать создателей
         Button creatorsButton = findViewById(R.id.toCreators);
-
+        // Через некоторое время открывает окно с создателями приложения
         final ScrollView sv=findViewById(R.id.scrollInCreators);
         creatorsButton.setOnClickListener(new OnClickListener() {
             @Override
@@ -275,10 +303,6 @@ public class MainActivity extends Activity
                 while (timeElapsed < 11)
                     timeElapsed = (System.nanoTime() - startTime) / 1000000000;
                 ((ViewFlipper) findViewById(R.id.mainFlipper)).setDisplayedChild(2);
-
-
-
-
             }
         });
 
@@ -293,6 +317,7 @@ public class MainActivity extends Activity
             }
         });
 
+        // Выйти из режима созерцания созидателей
         Button fromCreatorsButton = findViewById(R.id.fromCreators);
         fromCreatorsButton.setOnClickListener(new OnClickListener() {
             @Override
@@ -305,12 +330,13 @@ public class MainActivity extends Activity
 
 
     //////////////////////////////GOOGLE
+    // Вход в аккаунт Google
     private void signIn() {
         Log.i(TAG, "Start sign in");
         mGoogleSignInClient = buildGoogleSignInClient();
         startActivityForResult(mGoogleSignInClient.getSignInIntent(), REQUEST_CODE_SIGN_IN);
     }
-
+    // Функция входа
     private GoogleSignInClient buildGoogleSignInClient() {
         GoogleSignInOptions signInOptions =
                 new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
@@ -319,16 +345,18 @@ public class MainActivity extends Activity
         return GoogleSignIn.getClient(this, signInOptions);
     }
 
+    // Обработка результатов активностей
     @Override
     protected void onActivityResult(final int requestCode, final int resultCode, final Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         switch (requestCode) {
+            // Если это - результат авторизации в GoogleDrive
             case REQUEST_CODE_SIGN_IN:
                 Log.i(TAG, "Sign in request code");
-                // Called after user is signed in.
+                // Если успешно:
                 if (resultCode == RESULT_OK) {
                     Log.i(TAG, "Signed in successfully.");
-                    // Use the last signed in account here since it already have a Drive scope.
+                    // Используется последний аккаунт
                     mDriveClient = Drive.getDriveClient(this, GoogleSignIn.getLastSignedInAccount(this));
                     // Build a drive resource client.
                     mDriveResourceClient =
@@ -336,20 +364,23 @@ public class MainActivity extends Activity
                     // Save
                     BitmapFactory.Options options=new BitmapFactory.Options();
                     options.inScaled=false;
-
+                    // Создание папки
                     createFolder();
-
+                }
+                if (resultCode == RESULT_CANCELED){
+                    AlertDialog.Builder adb = new AlertDialog.Builder(context);
+                    adb.setMessage("Ошибка авторизации");
+                    adb.create().show();
                 }
                 break;
         }
     }
 
-
+    // Создание папки для файлов на GD
     private void createFolder() {
-
+        // Получение даты и времени:
         Calendar c = Calendar.getInstance();
-        System.out.println("Current time => "+c.getTime());
-
+        //System.out.println("Current time => "+c.getTime());
         SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd-HH-mm-ss");
         String formattedDate = df.format(c.getTime());
 
@@ -367,74 +398,75 @@ public class MainActivity extends Activity
                 .addOnSuccessListener(this,
                         driveFolder -> {
                     writeFile(driveFolder);});
-
-
     }
 
+    // Запись файла на диск
     public void writeFile(final DriveFolder driveid) {
-
+        // Путь к файлу на устройстве
         String root = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOCUMENTS).toString();
         File myDir = new File(root + "/CustomMapper");
         if (!myDir.exists()) {
             return;
         }
-        for(int i=1;i<10;i++) {
+        // Отправка всех этажей
+        for(int i=MIN_FLOOR;i<MAX_FLOOR;i++) {
             String fname = "Walls" + fileName + "Floor" + i + ".txt";
             File file = new File(myDir, fname);
-            if (!file.exists())
-                return;
+            if (file.exists()) {
 
-            final Task<DriveFolder> rootFolderTask = mDriveResourceClient.getRootFolder();
-            final Task<DriveContents> createContentsTask = mDriveResourceClient.createContents();
-            Tasks.whenAll(rootFolderTask, createContentsTask).continueWithTask(task -> {
-                DriveFolder parent = driveid;
-                DriveContents contents = createContentsTask.getResult();
-                OutputStream outputStream = contents.getOutputStream();
-
-
-                try (Writer writer = new OutputStreamWriter(outputStream)) {
+                final Task<DriveFolder> rootFolderTask = mDriveResourceClient.getRootFolder();
+                final Task<DriveContents> createContentsTask = mDriveResourceClient.createContents();
+                Tasks.whenAll(rootFolderTask, createContentsTask).continueWithTask(task -> {
+                    DriveFolder parent = driveid;
+                    DriveContents contents = createContentsTask.getResult();
+                    OutputStream outputStream = contents.getOutputStream();
 
 
-                    //InputStream inputStream = openFileInput(fileName);
-                    FileInputStream inputStream = new FileInputStream(file);
-                    InputStreamReader isr = new InputStreamReader(inputStream);
-                    BufferedReader reader = new BufferedReader(isr);
-                    String templine;
-                    while ((templine = reader.readLine()) != null) {
-                        writer.write(templine);
-                        writer.write("\n");
+                    try (Writer writer = new OutputStreamWriter(outputStream)) {
 
+
+                        //InputStream inputStream = openFileInput(fileName);
+                        FileInputStream inputStream = new FileInputStream(file);
+                        InputStreamReader isr = new InputStreamReader(inputStream);
+                        BufferedReader reader = new BufferedReader(isr);
+                        String templine;
+                        while ((templine = reader.readLine()) != null) {
+                            writer.write(templine);
+                            writer.write("\n");
+
+                        }
+                        inputStream.close();
+                        reader.close();
+                        isr.close();
+
+                    } catch (Throwable e) {
                     }
-                    inputStream.close();
-                    reader.close();
-                    isr.close();
-
-                } catch (Throwable e) {
-                }
 
 
-                MetadataChangeSet changeSet = new MetadataChangeSet.Builder()
-                        .setTitle(file.getName())
-                        .setMimeType("text/plain")
-                        .setStarred(true)
-                        .build();
+                    MetadataChangeSet changeSet = new MetadataChangeSet.Builder()
+                            .setTitle(file.getName())
+                            .setMimeType("text/plain")
+                            .setStarred(true)
+                            .build();
 
-                return mDriveResourceClient.createFile(parent, changeSet, contents);
-            })
-                    .addOnSuccessListener(this,
-                            driveFile -> {
+                    return mDriveResourceClient.createFile(parent, changeSet, contents);
+                })
+                        .addOnSuccessListener(this,
+                                driveFile -> {
 
-                            })
-                    .addOnFailureListener(this, e -> {
-                        Log.e(TAG, "Unable to create file", e);
+                                })
+                        .addOnFailureListener(this, e -> {
+                            Log.e(TAG, "Unable to create file", e);
 
-                    });
+                        });
+            }
         }
     }
 
 
+    // Изменение размеров кнопок, согласно размерам экрана
     private void ButtonSize(){
-        // Перепись всех кнопк, подвергающихся экзекуции
+        // Перепись всех кнопок, подвергающихся экзекуции
         Button EM = findViewById(R.id.edit_move);
         Button LU = findViewById(R.id.upButton);
         Button LD = findViewById(R.id.downButton);
@@ -462,26 +494,27 @@ public class MainActivity extends Activity
         EditButtonSize(LB,s*2,s);
     }
 
+    // Изменение размеров конкретной кнопки
     private void EditButtonSize(Button but, int w, int h){
         but.getLayoutParams().width=w;
         but.getLayoutParams().height=h;
     }
 
+    // Функция открытия файла
     public String openFile(String fileName,int floorNumber) {
         String line="";
         try {
-
+            // Получение пути
             String root = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOCUMENTS).toString();
             File myDir = new File(root + "/CustomMapper");
             if (!myDir.exists()) {
                 return "no such directory";
             }
-
+            // Получение имени файла
             String fname = "Walls"+fileName+"Floor"+floorNumber+".txt";
             File file = new File (myDir, fname);
             if (file.exists ())
             {
-                //InputStream inputStream = openFileInput(fileName);
                 FileInputStream inputStream = new FileInputStream(file);
 
                 if (inputStream != null)
@@ -490,8 +523,10 @@ public class MainActivity extends Activity
                     BufferedReader reader = new BufferedReader(isr);
                     String templine;
 
+                    // Если файл не пуст
                     if ((templine = reader.readLine()) != null)
                     {
+                        // Если строка содержит запись об этаже
                         if (templine.contains("Floor"))
                         {
                             char tempFloor=templine.charAt(5);
@@ -502,17 +537,19 @@ public class MainActivity extends Activity
                         {
                             return "error: no floor";
                         }
+                        // Пока есть строки
                         while((templine=reader.readLine())!=null)
                         {
-
+                            // Преобразуем строку в число и получим индекс
                             int index=Integer.valueOf(templine);
+                            // Получаем x и y
                             float x=Float.valueOf(reader.readLine());
                             float y=Float.valueOf(reader.readLine());
                             line+=x;
+                            // Добавляем точку на карту
                             HashMap<Integer, MapWallPoint> tempMapWallPoints = new HashMap<>();
                             while(!((templine=reader.readLine()).contains("***")))
                             {
-
                                 if (templine==null)
                                     return "error unexpected end of file"+templine;
                                 if (mapPanel.MapWallPoints.containsKey(Integer.valueOf(templine))) {
@@ -544,19 +581,22 @@ public class MainActivity extends Activity
     }
 
 
-
+    // Функция сохранения карты
     public void saveFile(String fileName,int floorNumber) {
         try {
+            // Получение пути
             String root = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOCUMENTS).toString();
             File myDir = new File(root + "/CustomMapper");
             if (!myDir.exists()) {
                 myDir.mkdirs();
             }
 
+            // Имя файла
             String fname = "Walls"+fileName+"Floor"+floorNumber+".txt";
             File file = new File (myDir, fname);
             if (file.exists ())
                 file.delete ();
+
 
             FileOutputStream out = new FileOutputStream(file);
             OutputStreamWriter osw = new OutputStreamWriter(out);
@@ -564,17 +604,16 @@ public class MainActivity extends Activity
             int[] tempIndexes=new int[mapPanel.MapWallPoints.size()];
             writer.write("Floor"+floorNumber);
             int i=0;
+            // Сохранение индексов всех точек в буфер
             for(Map.Entry<Integer, MapWallPoint> entry : mapPanel.MapWallPoints.entrySet())
             {
                 tempIndexes[i] = entry.getKey();
-                //MapWallPoint value = entry.getValue();
-                //value.save(writer);
                 i++;
             }
             Arrays.sort(tempIndexes);
+            // Запись всех точек в файл
             for(int j=0;j<i;j++)
             {
-
                 mapPanel.MapWallPoints.get(tempIndexes[j]).save(writer);
             }
             writer.close();
@@ -609,10 +648,6 @@ public class MainActivity extends Activity
         }
         // Включаем редактирование
         else{
-            ////////////////////////////
-            //////Удалить этот код//////
-            //PointFunction(v);
-            ////////////////////////////
             // Получаем картинку
             Drawable img = res.getDrawable(R.drawable.edit);
             // Устанавливаем картинку
@@ -637,7 +672,6 @@ public class MainActivity extends Activity
         ad.setPositiveButton("Принять", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
-                // Здесь впиши, что хочешь на OK
                 // Это строка, из которой нужен текст
                 EditText ET = layout.findViewById(R.id.coord);
                 String Row = ET.getText().toString();
@@ -674,38 +708,37 @@ public class MainActivity extends Activity
 
     // Всплывающее окно "4 строки"
    public void PointFunction(final int objectId){
+        // Если в функцию передано неправильное значение
        if(!(mapPanel.MapWallPoints.containsKey(objectId)))
            return;
+        final int id=objectId;
         AlertDialog.Builder adb = new AlertDialog.Builder(this);
         // Разметка всплывающего окна
-       final int id=objectId;
         final View layout = LayoutInflater.from(this).inflate(R.layout.point_layout, null);
         adb.setView(layout);
+        // Запретить закрывать нажатием во вне
         adb.setCancelable(false);
+        // Назначение текста в заголовке
         TextView headline=layout.findViewById(R.id.headline);
         headline.setText("POINT #"+id);
+        // Заполнение строки координат
         final EditText pointCoord=layout.findViewById(R.id.point_coord);
         pointCoord.setText(""+mapPanel.MapWallPoints.get(objectId).getWorldLocation().x+", "+mapPanel.MapWallPoints.get(objectId).getWorldLocation().y);
+        // Заполнение поля "Соседи"
         final EditText neighbors = layout.findViewById(R.id.neighbors);
-
-
         String setNeigboursRow="";
-       for(Map.Entry<Integer,MapWallPoint> entry: mapPanel.MapWallPoints.get(objectId).walls.entrySet())
-       {
-           setNeigboursRow+=entry.getKey()+", ";
-
-       }
-       //if(setNeigboursRow.endsWith(", "));
+        for(Map.Entry<Integer,MapWallPoint> entry: mapPanel.MapWallPoints.get(objectId).walls.entrySet())
+        {
+            setNeigboursRow+=entry.getKey()+", ";
+        }
         neighbors.setText(setNeigboursRow);
 
-
-
-
-
+        // Кнопка удаления точки
         Button del = layout.findViewById(R.id.ad_del);
         del.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View view) {
+                // Диалоговое окно подтверждения намерений
                 AlertDialog.Builder ad1 = new AlertDialog.Builder(context);
                 ad1.setMessage("Вы уверены, что хотите удалить?");
                 ad1.setPositiveButton("Да", new DialogInterface.OnClickListener() {
@@ -720,6 +753,7 @@ public class MainActivity extends Activity
                 ad1.setNegativeButton("Нет", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialogInterface, int i) {
+                        // Если "Нет", то просто закрыть
                         dialogInterface.cancel();
                     }
                 });
@@ -727,6 +761,7 @@ public class MainActivity extends Activity
             }
         });
 
+        // Кнопка закрытия этого диалогового окна
         Button cancelButt = layout.findViewById(R.id.ad_cancel);
         cancelButt.setOnClickListener(new OnClickListener() {
             @Override
@@ -735,19 +770,20 @@ public class MainActivity extends Activity
             }
         });
 
+        // Кнопка сохранения изменений
         Button okButt = layout.findViewById(R.id.ad_ok);
         okButt.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View view) {
-                // Принять настройки
-                //
+                    // Получаем значения из полей:
+                // Координаты
                 String rowCoords=pointCoord.getText().toString();
                 String[] tempCoordRows = rowCoords.split(", ");
-                //
-
+                // Соседи
                 String rowWalls = neighbors.getText().toString();
-
                 String[] tempWallsRows = rowWalls.split(", ");
+                    // Изменяем информацию о точке:
+                // Переписываем соседей
                 HashMap<Integer, MapWallPoint> tempMapWallPoints = new HashMap<>();
                 if (rowWalls.length()>0)
                 {
@@ -767,9 +803,10 @@ public class MainActivity extends Activity
                     }
 
                 }
+                // Переписываем координаты
                 float x=Float.valueOf(tempCoordRows[0]);
                 float y=Float.valueOf(tempCoordRows[1]);
-
+                // Сохраняем изменения
                 mapPanel.changeWallPoint(objectId,x,y,tempMapWallPoints);
                 // Закрыть всплывающее окно
                 ad.dismiss();
@@ -795,6 +832,7 @@ public class MainActivity extends Activity
         ad.show();
     }
 
+    // Класс для выпадающего списка объектов (слева сверху)
     public class MyCustomAdapter extends ArrayAdapter<String> {
         public MyCustomAdapter(Context context, int textViewResourceId, String[] objects) {
             super(context, textViewResourceId, objects);
@@ -808,21 +846,16 @@ public class MainActivity extends Activity
             return getCustomView(position, convertView, parent);
         }
         public View getCustomView(int position, View convertView, ViewGroup parent) {
-
+            // Используем отдельную разметку
             LayoutInflater inflater = getLayoutInflater();
             View row = inflater.inflate(R.layout.row, parent, false);
+            // Указываем пары текст-картинка для каждой строки
             TextView label = (TextView) row.findViewById(R.id.spin_text);
             label.setText(spinList[position]);
-
             ImageView icon = (ImageView) row.findViewById(R.id.spin_icon);
             icon.setImageResource(spinIcons[position]);
+            // Возвращаем объект
             return row;
         }
-    }
-
-    public void scroll()
-    {
-
-
     }
 }
